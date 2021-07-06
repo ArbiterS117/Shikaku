@@ -1,0 +1,24 @@
+# Blender MTL File: 'test.blend'
+# Material Count: 2
+
+newmtl Leaves_Salmon
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.886300 0.552900 0.470600
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd tree3.png
+
+newmtl Wood_Dark.002
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.674500 0.470600 0.192200
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd wood_planks.png

@@ -1,0 +1,231 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="來源檔案">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="標頭檔">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="資源檔">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="camera.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="input.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="player.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="model.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="shadow.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="meshfield.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="meshwall.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="tree.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="Collider3D.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="bullet.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="score.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="setSprite.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="sprite.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="player_partsModelAnim.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="sound.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="result.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="title.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="gameScene.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="tutorial.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="fade.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="saveFile.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="particle.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="UISprite.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="debugproc.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="platform.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="groundFile.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="light.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="EditTool.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="EditToolInput.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="EditToolDebugProc.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyFile.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="ground.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="renderer.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="input.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="player.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="model.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="shadow.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="meshfield.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="meshwall.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="tree.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider3D.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="bullet.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="score.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="setSprite.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="sprite.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="player_partsModelAnim.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="sound.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="result.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="title.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="gameScene.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="tutorial.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="fade.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="saveFile.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="particle.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="UISprite.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="debugproc.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="platform.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="groundFile.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="light.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="EditTool.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="EditToolInput.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="EditToolDebugProc.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyFile.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="ground.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
