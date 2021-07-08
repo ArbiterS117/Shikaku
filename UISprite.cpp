@@ -76,6 +76,8 @@ void LoadUISprite(char *TextureName, DX11_UISPRITE *sprite, float width, float h
 		NULL,
 		&sprite->Texture,
 		NULL);
+
+	sprite->Uianimation.hasanimation = false;
 }
 
 //=============================================================================
@@ -203,21 +205,46 @@ void SetUISprite(DX11_UISPRITE *sprite, float X, float Y, float Width, float Hei
 	D3DXVECTOR2 temp = D3DXVECTOR2(hw, hh);
 	float Radius = D3DXVec2Length(&temp);	// 中心点から頂点に対する距離
 
+	float uaniblendX = X;
+	float uaniblendY = Y;
+	if (sprite->Uianimation.amt == UIAnimationMoveType::Curve)
+	{
+		// エネミー０番だけテーブルに従って座標移動（線形補間）
+		int nowNo = (int)sprite->Uianimation.worktime;		// 整数分であるテーブル番号を取り出している
+		int maxNo = ANIMATION_CURVE_POINT_COUNT + 1;			// 登録テーブル数を数えている
+		int nextNo = (nowNo + 1) % maxNo;			// 移動先テーブルの番号を求めている
+		D3DXVECTOR3	pos = sprite->Uianimation.curve[nextNo] - sprite->Uianimation.curve[nowNo];// XYZ移動量を計算している
+		float nowTime = sprite->Uianimation.worktime - nowNo;	// 時間部分である少数を取り出している
+		pos *= nowTime;								// 現在の移動量を計算している
+		sprite->Uianimation.worktime += sprite->Uianimation.timestep;	// 時間を進めている
+		// 計算して求めた移動量を現在の移動テーブルXYZに足している＝表示座標を求めている
+		D3DXVECTOR3 temp = sprite->Uianimation.curve[nextNo] + pos;
+
+		if ((int)sprite->Uianimation.worktime >= maxNo - 1)		// 登録テーブル最後まで移動したか？
+		{
+			if (sprite->Uianimation.loop == true)
+			{
+				sprite->Uianimation.worktime = 0.0f;
+			}
+		}
+		uaniblendX = temp.x;
+		uaniblendY = temp.y;
+	}
 	// ここでアフィン変換（sincosのやつ）を使って4頂点を回転させる
-	float x = X - cosf(BaseAngle + Rot) * Radius;
-	float y = Y - sinf(BaseAngle + Rot) * Radius;
+	float x = uaniblendX - cosf(BaseAngle + Rot) * Radius;
+	float y = uaniblendY - sinf(BaseAngle + Rot) * Radius;
 	vertex[0].Position = D3DXVECTOR3(x, y, 0.0f);
 
-	x = X + cosf(BaseAngle - Rot) * Radius;
-	y = Y - sinf(BaseAngle - Rot) * Radius;
+	x = uaniblendX + cosf(BaseAngle - Rot) * Radius;
+	y = uaniblendY - sinf(BaseAngle - Rot) * Radius;
 	vertex[1].Position = D3DXVECTOR3(x, y, 0.0f);
 
-	x = X - cosf(BaseAngle - Rot) * Radius;
-	y = Y + sinf(BaseAngle - Rot) * Radius;
+	x = uaniblendX - cosf(BaseAngle - Rot) * Radius;
+	y = uaniblendY + sinf(BaseAngle - Rot) * Radius;
 	vertex[2].Position = D3DXVECTOR3(x, y, 0.0f);
 
-	x = X + cosf(BaseAngle + Rot) * Radius;
-	y = Y + sinf(BaseAngle + Rot) * Radius;
+	x = uaniblendX + cosf(BaseAngle + Rot) * Radius;
+	y = uaniblendX + sinf(BaseAngle + Rot) * Radius;
 	vertex[3].Position = D3DXVECTOR3(x, y, 0.0f);
 
 	vertex[0].Diffuse = Color;
@@ -232,4 +259,20 @@ void SetUISprite(DX11_UISPRITE *sprite, float X, float Y, float Width, float Hei
 
 	GetDeviceContext()->Unmap(sprite->VertexBuffer, 0);
 
+}
+
+void SetUIAnimation(DX11_UISPRITE *UIsprite, UIAnimation uani) 
+{
+	UIsprite->Uianimation = uani;
+	if (uani.at == UIAnimationMoveType::Curve)
+	{
+		auto curve = GetThreePowerBeizerList(uani.stpos, uani.edpos, uani.cp1pos, uani.cp2pos,
+			ANIMATION_CURVE_POINT_COUNT);
+		for (unsigned int i = 0; i < ANIMATION_CURVE_POINT_COUNT; i++)
+		{
+			UIsprite->Uianimation.curve[i] = curve[i];
+		}
+		delete[]curve;
+	}
+	
 }

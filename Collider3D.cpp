@@ -1668,6 +1668,55 @@ bool RayCast(D3DXVECTOR3 p0, D3DXVECTOR3 p1, D3DXVECTOR3 p2, D3DXVECTOR3 pos0, D
 
 	return(true);	// 当たっている！(hitには当たっている交点が入っている。normalには法線が入っている)
 }
+
+// <summary>
+// 四つの点を組み合わせ、ベジエ曲線を作る
+// </summary>
+// <param name="startPoint"></param>　開始点
+// <param name="controlPoint1"></param>　中間点１
+// <param name="controlPoint2"></param>　中間点２
+// <param name="endPoint"></param>　結末点
+// <param name="segmentNum"></param>　何段線がありますか
+// <returns></returns>
+// 
+D3DXVECTOR3* GetThreePowerBeizerList(D3DXVECTOR3 startPoint, D3DXVECTOR3 controlPoint1, D3DXVECTOR3 controlPoint2, D3DXVECTOR3 endPoint, int segmentNum)
+{
+	D3DXVECTOR3* path = new D3DXVECTOR3[segmentNum + 1];
+
+	for (int i = 0; i < segmentNum; i++)
+	{
+		float t = (float)i / (float)segmentNum;
+		D3DXVECTOR3 pixel = CalculateThreePowerBezierPoint(t, startPoint,
+			controlPoint1, controlPoint2, endPoint);
+		path[i] = pixel;
+	}
+	return path;
+}
+
+// <summary>
+// 割れている点を一つずつ計算
+// </summary>
+// <param name="t"></param>　どんな程度を進んでいる
+// <param name="p0"></param> 開始点
+// <param name="p1"></param> 中間点１
+// <param name="p2"></param> 中間点２
+// <param name="p3"></param> 結末点
+// <returns></returns>
+D3DXVECTOR3 CalculateThreePowerBezierPoint(float t, D3DXVECTOR3 p0, D3DXVECTOR3 p1, D3DXVECTOR3 p2, D3DXVECTOR3 p3)
+{
+	float u = 1 - t;
+	float tt = t * t;
+	float uu = u * u;
+	float ttt = tt * t;
+	float uuu = uu * u;
+
+	D3DXVECTOR3 p = uuu * p0;
+	p += 3 * t * uu * p1;
+	p += 3 * tt * u * p2;
+	p += ttt * p3;
+
+	return p;
+}
 //=============================================================================
 // 情報を取得
 //=============================================================================

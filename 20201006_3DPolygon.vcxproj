@@ -53,6 +53,7 @@
     <ClCompile Include="title.cpp" />
     <ClCompile Include="tree.cpp" />
     <ClCompile Include="tutorial.cpp" />
+    <ClCompile Include="UIAnimation.cpp" />
     <ClCompile Include="UISprite.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -90,6 +91,7 @@
     <ClInclude Include="title.h" />
     <ClInclude Include="tree.h" />
     <ClInclude Include="tutorial.h" />
+    <ClInclude Include="UIAnimation.h" />
     <ClInclude Include="UISprite.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

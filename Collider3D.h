@@ -116,3 +116,7 @@ COLLIDER3D *GetCollider(void);
 void SetCollider3DEnable(int id, bool b);
 float dotProduct(D3DXVECTOR3 *v1, D3DXVECTOR3 *v2);
 void crossProduct(D3DXVECTOR3 *ret, D3DXVECTOR3 *v1, D3DXVECTOR3 *v2);
+
+// calculate 3 power bezier curve
+D3DXVECTOR3 CalculateThreePowerBezierPoint(float t, D3DXVECTOR3 p0, D3DXVECTOR3 p1, D3DXVECTOR3 p2, D3DXVECTOR3 p3);
+D3DXVECTOR3* GetThreePowerBeizerList(D3DXVECTOR3 startPoint, D3DXVECTOR3 controlPoint1, D3DXVECTOR3 controlPoint2, D3DXVECTOR3 endPoint, int segmentNum);

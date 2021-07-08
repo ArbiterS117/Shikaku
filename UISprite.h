@@ -8,6 +8,8 @@
 
 #include "main.h"
 #include "renderer.h"
+#include "UIAnimation.h"
+#include "Collider3D.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -23,6 +25,8 @@ struct DX11_UISPRITE
 
 	MATERIAL					Material;
 	ID3D11ShaderResourceView	*Texture;
+
+	UIAnimation Uianimation;
 
 	//===================テクスチャデータ==============
 	float PosX = 0.0f;
@@ -45,3 +49,5 @@ void UnloadUISprite(DX11_UISPRITE *UIsprite);
 void DrawUISprite(DX11_UISPRITE *UIsprite, int num = 0, bool anti = false);
 void DrawUISprite(DX11_UISPRITE *UIsprite, float posX, float posY, int num = 0);
 void DrawUISprite(DX11_UISPRITE *UIsprite, float posX, float posY, float Width, float Height,int num = 0); // Texture_W,Texture_H を無視
+
+void SetUIAnimation(DX11_UISPRITE *UIsprite, UIAnimation uani);
