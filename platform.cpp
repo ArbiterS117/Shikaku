@@ -149,15 +149,21 @@ HRESULT InitPlatform(void)
 
 	//============線形移動 tmep
 	g_MoveSpdX[0] = 0.0032f;
+	//g_MoveSpdX[0] = 0.1f;
 	g_MoveSpdX[1] = 0.005f;
+	//g_MoveSpdX[1] = 0.1f;
 	g_MoveTblX[0] = D3DXVECTOR3(-1000.0f,  0.0f,  0.0f);
 	g_MoveTblX[1] = D3DXVECTOR3( 1000.0f, 0.0f, 0.0f);
 	g_MoveSpdY[0] = 0.0032f;
+	//g_MoveSpdY[0] = 0.1f;
 	g_MoveSpdY[1] = 0.005f;
+	//g_MoveSpdY[1] = 0.1f;
 	g_MoveTblY[0] = D3DXVECTOR3(0.0f, -1000.0f, 0.0f);
 	g_MoveTblY[1] = D3DXVECTOR3(0.0f,  1000.0f, 0.0f);
 	g_MoveSpdZ[0] = 0.0032f;
+	//g_MoveSpdZ[0] = 0.1f;
 	g_MoveSpdZ[1] = 0.005f;
+	//g_MoveSpdZ[1] = 0.1f;
 	g_MoveTblZ[0] = D3DXVECTOR3(0.0f, 0.0f, -1000.0f);
 	g_MoveTblZ[1] = D3DXVECTOR3(0.0f, 0.0f,  1000.0f);
 
