@@ -8,6 +8,7 @@
 //=============================================================================
 #include "UISprite.h"
 
+
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
@@ -218,7 +219,7 @@ void SetUISprite(DX11_UISPRITE *sprite, float X, float Y, float Width, float Hei
 		pos *= nowTime;								// 現在の移動量を計算している
 		sprite->Uianimation.worktime += sprite->Uianimation.timestep;	// 時間を進めている
 		// 計算して求めた移動量を現在の移動テーブルXYZに足している＝表示座標を求めている
-		D3DXVECTOR3 temp = sprite->Uianimation.curve[nextNo] + pos;
+		D3DXVECTOR3 temp = sprite->Uianimation.curve[nowNo] + pos;
 
 		if ((int)sprite->Uianimation.worktime >= maxNo - 1)		// 登録テーブル最後まで移動したか？
 		{
@@ -244,7 +245,7 @@ void SetUISprite(DX11_UISPRITE *sprite, float X, float Y, float Width, float Hei
 	vertex[2].Position = D3DXVECTOR3(x, y, 0.0f);
 
 	x = uaniblendX + cosf(BaseAngle + Rot) * Radius;
-	y = uaniblendX + sinf(BaseAngle + Rot) * Radius;
+	y = uaniblendY + sinf(BaseAngle + Rot) * Radius;
 	vertex[3].Position = D3DXVECTOR3(x, y, 0.0f);
 
 	vertex[0].Diffuse = Color;
@@ -275,4 +276,53 @@ void SetUIAnimation(DX11_UISPRITE *UIsprite, UIAnimation uani)
 		delete[]curve;
 	}
 	
+}
+
+void SetSpriteAnimation(DX11_UISPRITE* sprite,
+	UIAnimationStatusType ast,
+	UIAnimationMoveType amt,
+	UIAnimationType at,
+	bool loop,
+	float time,
+	float timestep,
+	D3DXVECTOR3 stpos,
+	D3DXVECTOR3 edpos,
+	D3DXVECTOR3 cp1pos,
+	D3DXVECTOR3 cp2pos
+
+)
+{
+	//auto sprite = &g_UISprite[6];
+	sprite->Uianimation.hasanimation = true;
+	sprite->Uianimation.ast = ast;
+	sprite->Uianimation.amt = amt;
+	sprite->Uianimation.at = at;
+	sprite->Uianimation.loop = loop;
+	sprite->Uianimation.time = time;
+	if (ast == UIAnimationStatusType::Default)
+	{
+		if (amt == UIAnimationMoveType::Curve)
+		{
+			sprite->Uianimation.stpos = stpos;
+			sprite->Uianimation.edpos = edpos;
+			sprite->Uianimation.cp2pos = cp2pos;
+			sprite->Uianimation.cp1pos = cp1pos;
+			sprite->Uianimation.worktime = 0.0f;
+			sprite->Uianimation.timestep = 0.2f;
+			sprite->Uianimation.workpos1 = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+			sprite->Uianimation.workpos2 = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+			sprite->Uianimation.workscale1 = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+			sprite->Uianimation.workscale2 = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+			auto curve = GetThreePowerBeizerList(sprite->Uianimation.stpos, sprite->Uianimation.edpos,
+				sprite->Uianimation.cp1pos, sprite->Uianimation.cp2pos,
+				ANIMATION_CURVE_POINT_COUNT);
+			for (unsigned int i = 0; i < ANIMATION_CURVE_POINT_COUNT; i++)
+			{
+				sprite->Uianimation.curve[i] = curve[i];
+			}
+			delete[]curve;
+		}
+
+	}
+
 }

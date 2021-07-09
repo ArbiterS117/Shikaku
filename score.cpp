@@ -8,6 +8,7 @@
 #include "score.h"
 #include "setSprite.h"
 #include "UISprite.h"
+#include "UIAnimation.h"
 
 #include "platform.h"
 #include "EditTool.h"
@@ -81,24 +82,14 @@ HRESULT InitScore(void)
 	LoadUISprite(UISPRITE_SP      , &g_UISprite[12], 350, 350, 150.0f, 170.00, 1, 1, 0.0f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 
 	//test animation code
-	UIAnimation uani;
-	auto sprite = g_UISprite[6];
-	uani.amt = UIAnimationMoveType::Curve;
-	uani.at = UIAnimationType::TransForm;
-	uani.stpos = D3DXVECTOR3(sprite.PosX, sprite.PosY,0.0f);
-	uani.edpos = D3DXVECTOR3(sprite.PosX + 500.0f, sprite.PosY - 400.0f, 0.0f);
-	uani.cp1pos = D3DXVECTOR3(sprite.PosX + 100.0f, sprite.PosY - 50.0f, 0.0f);
-	uani.cp2pos = D3DXVECTOR3(sprite.PosX + 250.0f, sprite.PosY - 100.0f, 0.0f);
-	uani.hasanimation = true;
-	uani.loop = true;
-	uani.time = 2.0f;
-	uani.worktime = 0.0f;
-	uani.timestep = 0.002f;
-	uani.workpos1 = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	uani.workpos2 = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	uani.workscale1 = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	uani.workscale2 = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	SetUIAnimation(&sprite, uani);
+	//UIAnimation uani;
+	auto sprite = &g_UISprite[6];
+	D3DXVECTOR3 stpos = D3DXVECTOR3(sprite->PosX, sprite->PosY, 0.0f);
+	D3DXVECTOR3 edpos = D3DXVECTOR3(sprite->PosX + 100.0f, sprite->PosY, 0.0f);
+	D3DXVECTOR3 cp2pos = D3DXVECTOR3(sprite->PosX + 500.0f, sprite->PosY + 500.0f, 0.0f);
+	D3DXVECTOR3 cp1pos = D3DXVECTOR3(sprite->PosX - 1250.0f, sprite->PosY + 500.0f, 0.0f);
+	SetSpriteAnimation(sprite, UIAnimationStatusType::Default, UIAnimationMoveType::Curve, UIAnimationType::TransForm,
+						true,2.0f,0.2f, stpos, edpos, cp1pos, cp2pos);
 
 	//Tutorio
 

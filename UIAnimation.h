@@ -8,6 +8,12 @@ enum UIAnimationType
 	Scaling,
 };
 
+enum UIAnimationStatusType
+{
+	Default,
+	Custom,
+};
+
 enum UIAnimationMoveType
 {
 	Line,
@@ -33,6 +39,7 @@ struct UIAnimation
 	bool hasanimation;
 	bool loop;
 
+	UIAnimationStatusType ast;
 	UIAnimationType at;
 	UIAnimationMoveType amt;
 	D3DXVECTOR3 curve[ANIMATION_CURVE_POINT_COUNT];

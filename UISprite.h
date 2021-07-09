@@ -51,3 +51,9 @@ void DrawUISprite(DX11_UISPRITE *UIsprite, float posX, float posY, int num = 0);
 void DrawUISprite(DX11_UISPRITE *UIsprite, float posX, float posY, float Width, float Height,int num = 0); // Texture_W,Texture_H を無視
 
 void SetUIAnimation(DX11_UISPRITE *UIsprite, UIAnimation uani);
+
+void SetSpriteAnimation(DX11_UISPRITE* sprite,
+	UIAnimationStatusType ast, UIAnimationMoveType amt, UIAnimationType at,
+	bool loop, float time, float timestep, D3DXVECTOR3 stpos, D3DXVECTOR3 edpos,
+	D3DXVECTOR3 cp1pos, D3DXVECTOR3 cp2pos
+);
