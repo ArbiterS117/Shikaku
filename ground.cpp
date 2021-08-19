@@ -7,11 +7,17 @@
 #include "ground.h"
 #include "Collider3D.h"
 #include "player.h"
+#include "input.h"
+#include "debugproc.h"
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define MAX_MODEL		(10)					            // モデルの数
+#define MAX_MODEL		(11)					            // モデルの数
+#define	MODEL_GROUND_TEST       	"data/MODEL/Test.obj"		       
+//#define	MODEL_GROUND_TEST       	"data/MODEL/map.obj"		       
+//#define	MODEL_GROUND_TEST       	"data/MODEL/stage.obj"	
+
 #define	MODEL_GROUND_HEARTWORLD  	"data/MODEL/HeartWorld.obj"		       
 #define	MODEL_GROUND_HEARTWORLD_D  	"data/MODEL/HeartWorld_D.obj"		       
 #define	MODEL_GROUND_HtoW        	"data/MODEL/HtoW.obj"		       
@@ -28,9 +34,9 @@
 #define	MODEL_SKY2    	"data/MODEL/sky2.obj"		                       
 #define	MODEL_SKY3    	"data/MODEL/sky3.obj"		                       
 
-#define SCALE_X         (20)
-#define SCALE_Y         (20)
-#define SCALE_Z         (-20)
+#define SCALE_X         (10)
+#define SCALE_Y         (10)
+#define SCALE_Z         (-10)
 #define Move_X          (0)
 #define Move_Y          (0)
 #define Move_Z          (0)
@@ -39,8 +45,9 @@
 //*****************************************************************************
 static DX11_MODEL			g_Model[MAX_MODEL];						// モデル情報
 
-float skyRot = 0.0f;
+D3DXVECTOR3 worldRot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
+float skyRot = 0.0f;
 float a = 0.0f;
 int lvvvv = 0;
 
@@ -59,18 +66,19 @@ void InitNormals();
 
 HRESULT InitGround(void)
 {
-	LoadModel(MODEL_GROUND_HEARTWORLD, &g_Model[GroundType_HeartWorld]);
-	LoadModel(MODEL_GROUND_HEARTWORLD_D, &g_Model[GroundType_HeartWorld_D]);
-	LoadModel(MODEL_GROUND_HtoW, &g_Model[GroundType_HtoW]);
-	LoadModel(MODEL_GROUND_HtoW_D, &g_Model[GroundType_HtoW_D]);
-	LoadModel(MODEL_GROUND_WONDERLAND, &g_Model[GroundType_Wonderland]);
-	LoadModel(MODEL_GROUND_WONDERLAND2, &g_Model[GroundType_Wonderland2]);
-	LoadModel(MODEL_GROUND_WONDERLAND_D, &g_Model[GroundType_Wonderland_D]);
-	LoadModel(MODEL_GROUND_WtoS, &g_Model[GroundType_WtoS]);
-	LoadModel(MODEL_GROUND_SANDWORLD, &g_Model[GroundType_SandWorld]);
-	LoadModel(MODEL_GROUND_SANDWORLD_D, &g_Model[GroundType_SandWorld_D]);
-	LoadModel(MODEL_GROUND_StoS, &g_Model[GroundType_StoS]);
-	LoadModel(MODEL_GROUND_SNOWWORLD, &g_Model[GroundType_SnowWorld]);
+	LoadModel(MODEL_GROUND_TEST, &g_Model[GroundType_Test]);
+	//LoadModel(MODEL_GROUND_HEARTWORLD, &g_Model[GroundType_HeartWorld]);
+	//LoadModel(MODEL_GROUND_HEARTWORLD_D, &g_Model[GroundType_HeartWorld_D]);
+	//LoadModel(MODEL_GROUND_HtoW, &g_Model[GroundType_HtoW]);
+	//LoadModel(MODEL_GROUND_HtoW_D, &g_Model[GroundType_HtoW_D]);
+	//LoadModel(MODEL_GROUND_WONDERLAND, &g_Model[GroundType_Wonderland]);
+	//LoadModel(MODEL_GROUND_WONDERLAND2, &g_Model[GroundType_Wonderland2]);
+	//LoadModel(MODEL_GROUND_WONDERLAND_D, &g_Model[GroundType_Wonderland_D]);
+	//LoadModel(MODEL_GROUND_WtoS, &g_Model[GroundType_WtoS]);
+	//LoadModel(MODEL_GROUND_SANDWORLD, &g_Model[GroundType_SandWorld]);
+	//LoadModel(MODEL_GROUND_SANDWORLD_D, &g_Model[GroundType_SandWorld_D]);
+	//LoadModel(MODEL_GROUND_StoS, &g_Model[GroundType_StoS]);
+	//LoadModel(MODEL_GROUND_SNOWWORLD, &g_Model[GroundType_SnowWorld]);
 	LoadModel(MODEL_SKY, &g_Model[GroundType_Sky1]);
 	LoadModel(MODEL_SKY2, &g_Model[GroundType_Sky2]);
 	LoadModel(MODEL_SKY3, &g_Model[GroundType_Sky3]);
@@ -101,6 +109,58 @@ void UninitGround(void)
 
 void UpdateGround(void)
 {
+	PrintDebugProc("\n\n worldRotX:%f, worldRotX:%f, worldRotX:%f\n\n", worldRot.x/ D3DX_PI, worldRot.y/ D3DX_PI, worldRot.z/ D3DX_PI);
+
+	bool isRoted = false;
+	D3DXVECTOR3 deltaRot = D3DXVECTOR3(0.0f,0.0f,0.0f);
+
+	//TEST rot
+	if (GetKeyboardTrigger(DIK_UP)) {
+		deltaRot.y += 0.5f * D3DX_PI;
+		isRoted = true;
+	}
+	else if (GetKeyboardTrigger(DIK_DOWN)) {
+		deltaRot.y -= 0.5f * D3DX_PI;
+		isRoted = true;
+	}
+	else if (GetKeyboardTrigger(DIK_LEFT)) {
+		deltaRot.x -= 0.5f * D3DX_PI;
+		isRoted = true;
+	}
+	else if (GetKeyboardTrigger(DIK_RIGHT)) {
+		deltaRot.x += 0.5f * D3DX_PI;
+		isRoted = true;
+	}
+	else if (GetKeyboardTrigger(DIK_C)) {
+		deltaRot.z += 0.5f * D3DX_PI;
+		isRoted = true;
+	}
+	else if (GetKeyboardTrigger(DIK_V)) {
+		deltaRot.z -= 0.5f * D3DX_PI;
+		isRoted = true;
+	}
+
+	if (isRoted) {
+		worldRot += deltaRot;
+		D3DXMATRIX mtxRot, mtxTranslate;
+		D3DXMATRIX mtxWorld;
+		D3DXVECTOR3 playerNewPos;
+		D3DXVECTOR3 playerOriPos = GetPlayer()->pos;
+		// ワールドマトリックスの初期化
+		//D3DXMatrixIdentity(&mtxWorld);
+
+		// 移動を反映
+		D3DXMatrixTranslation(&mtxTranslate, playerOriPos.x, playerOriPos.y, playerOriPos.z); // have to put the model at (0,0,0)
+		D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxTranslate);
+
+		// 回転を反映
+		D3DXMatrixRotationYawPitchRoll(&mtxRot, deltaRot.x, deltaRot.y, deltaRot.z);
+		D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
+
+		D3DXVec3TransformCoord(&playerNewPos, &playerNewPos, &mtxWorld);
+
+		setPlayerPosition(playerNewPos);
+	}
 }
 
 void DrawGround(void)
@@ -121,27 +181,31 @@ void DrawGround(void)
 	D3DXMatrixScaling(&mtxScl, SCALE_X, SCALE_Y, SCALE_Z);
 	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxScl);
 
+	// 回転を反映
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, worldRot.x, worldRot.y, worldRot.z);
+	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
+
 	// 移動を反映
-	D3DXMatrixTranslation(&mtxTranslate, Move_X, Move_Y, Move_Z);
-	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxTranslate);
+	//D3DXMatrixTranslation(&mtxTranslate, Move_X, Move_Y, Move_Z);
+	//D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxTranslate);
 
 	// ワールドマトリックスの設定
 	SetWorldMatrix(&mtxWorld);
 
 	// モデル描画
-	DrawModel(&g_Model[GroundType_HeartWorld]);
-	DrawModel(&g_Model[GroundType_HeartWorld_D]);
-	DrawModel(&g_Model[GroundType_HtoW]);
-	DrawModel(&g_Model[GroundType_HtoW_D]);
-	DrawModel(&g_Model[GroundType_Wonderland]);
-	DrawModel(&g_Model[GroundType_Wonderland2]);
-	DrawModel(&g_Model[GroundType_Wonderland_D]);
-	DrawModel(&g_Model[GroundType_WtoS]);
-	DrawModel(&g_Model[GroundType_SandWorld]);
-	DrawModel(&g_Model[GroundType_SandWorld_D]);
-	DrawModel(&g_Model[GroundType_StoS]);
-	DrawModel(&g_Model[GroundType_SnowWorld
-]);
+	DrawModel(&g_Model[GroundType_Test]);
+	//DrawModel(&g_Model[GroundType_HeartWorld]);
+	//DrawModel(&g_Model[GroundType_HeartWorld_D]);
+	//DrawModel(&g_Model[GroundType_HtoW]);
+	//DrawModel(&g_Model[GroundType_HtoW_D]);
+	//DrawModel(&g_Model[GroundType_Wonderland]);
+	//DrawModel(&g_Model[GroundType_Wonderland2]);
+	//DrawModel(&g_Model[GroundType_Wonderland_D]);
+	//DrawModel(&g_Model[GroundType_WtoS]);
+	//DrawModel(&g_Model[GroundType_SandWorld]);
+	//DrawModel(&g_Model[GroundType_SandWorld_D]);
+	//DrawModel(&g_Model[GroundType_StoS]);
+	//DrawModel(&g_Model[GroundType_SnowWorld]);
 
 	SetLightEnable(true);
 
@@ -231,6 +295,18 @@ D3DXVECTOR3 *getGroundNormal(int id)
 	if(id == GroundType_StoS)	        return &groundNormal_StoS[0];
 	if(id == GroundType_SnowWorld)	    return &groundNormal_SnowWorld[0];
 	
+}
+
+float returnWorldRot(int i)
+{
+	if (i == 1)	return worldRot.x;
+	if (i == 2)	return worldRot.y;
+	if (i == 3)	return worldRot.z;
+}
+
+D3DXVECTOR3 GetGroungModelSCL()
+{
+	return D3DXVECTOR3(SCALE_X, SCALE_Y, SCALE_Z);
 }
 
 void InitNormals()
@@ -435,30 +511,30 @@ void InitNormals()
 	}
 
 	// SnowWorld
-	groundNormal_SnowWorld = new D3DXVECTOR3[g_Model[GroundType_SnowWorld].IndexNum];
-	for (int i = 0; i < g_Model[GroundType_SnowWorld].IndexNum; i += 3) {
-		D3DXVECTOR3 p0, p1, p2;
-		p0 = g_Model[GroundType_SnowWorld].Vertexlist[g_Model[GroundType_SnowWorld].Indexlist[i]];
-		p1 = g_Model[GroundType_SnowWorld].Vertexlist[g_Model[GroundType_SnowWorld].Indexlist[i + 1]];
-		p2 = g_Model[GroundType_SnowWorld].Vertexlist[g_Model[GroundType_SnowWorld].Indexlist[i + 2]];
-
-		D3DXVec3TransformCoord(&p0, &p0, &mtxWorld);
-		D3DXVec3TransformCoord(&p1, &p1, &mtxWorld);
-		D3DXVec3TransformCoord(&p2, &p2, &mtxWorld);
-		D3DXVECTOR3		nor;		// ポリゴンの法線
-		D3DXVECTOR3		vec1;
-		D3DXVECTOR3		vec2;
-
-		{	// ポリゴンの外積をとって法線を求める(固定物なら予めInit()で行っておくと良い)
-			vec1 = p1 - p0;
-			vec2 = p2 - p0;
-			crossProduct(&nor, &vec2, &vec1);
-			D3DXVec3Normalize(&nor, &nor);		// 計算しやすいように法線をノーマルイズしておく
-			groundNormal_SnowWorld[i] = nor;				// 求めた法線を入れておく
-			groundNormal_SnowWorld[i + 1] = nor;			// 求めた法線を入れておく
-			groundNormal_SnowWorld[i + 2] = nor;			// 求めた法線を入れておく
-		}
-	}
+	//groundNormal_SnowWorld = new D3DXVECTOR3[g_Model[GroundType_SnowWorld].IndexNum];
+	//for (int i = 0; i < g_Model[GroundType_SnowWorld].IndexNum; i += 3) {
+	//	D3DXVECTOR3 p0, p1, p2;
+	//	p0 = g_Model[GroundType_SnowWorld].Vertexlist[g_Model[GroundType_SnowWorld].Indexlist[i]];
+	//	p1 = g_Model[GroundType_SnowWorld].Vertexlist[g_Model[GroundType_SnowWorld].Indexlist[i + 1]];
+	//	p2 = g_Model[GroundType_SnowWorld].Vertexlist[g_Model[GroundType_SnowWorld].Indexlist[i + 2]];
+	//
+	//	D3DXVec3TransformCoord(&p0, &p0, &mtxWorld);
+	//	D3DXVec3TransformCoord(&p1, &p1, &mtxWorld);
+	//	D3DXVec3TransformCoord(&p2, &p2, &mtxWorld);
+	//	D3DXVECTOR3		nor;		// ポリゴンの法線
+	//	D3DXVECTOR3		vec1;
+	//	D3DXVECTOR3		vec2;
+	//
+	//	{	// ポリゴンの外積をとって法線を求める(固定物なら予めInit()で行っておくと良い)
+	//		vec1 = p1 - p0;
+	//		vec2 = p2 - p0;
+	//		crossProduct(&nor, &vec2, &vec1);
+	//		D3DXVec3Normalize(&nor, &nor);		// 計算しやすいように法線をノーマルイズしておく
+	//		groundNormal_SnowWorld[i] = nor;				// 求めた法線を入れておく
+	//		groundNormal_SnowWorld[i + 1] = nor;			// 求めた法線を入れておく
+	//		groundNormal_SnowWorld[i + 2] = nor;			// 求めた法線を入れておく
+	//	}
+	//}
 
 }
 

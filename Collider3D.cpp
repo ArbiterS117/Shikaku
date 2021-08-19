@@ -1451,12 +1451,16 @@ bool RayHitGround(D3DXVECTOR3 pos, D3DXVECTOR3 * HitPosition, D3DXVECTOR3 * Norm
 	// ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&mtxWorld);
 	// スケールを反映
-	D3DXMatrixScaling(&mtxScl, 20.0f, 20.0f, -20.0f);
+	D3DXVECTOR3 groundSCL = GetGroungModelSCL();
+	D3DXMatrixScaling(&mtxScl, groundSCL.x, groundSCL.y, groundSCL.z);
 	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxScl);
 
 	// 回転を反映
-	//D3DXMatrixRotationYawPitchRoll(&mtxRot, 0.0f, 0.0f, 0.0f);
-	//D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
+	float worldRotX = returnWorldRot(1);
+	float worldRotY = returnWorldRot(2);
+	float worldRotZ = returnWorldRot(3);
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, worldRotX, worldRotY, worldRotZ);
+	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
 
 	// 移動を反映
 	//D3DXMatrixTranslation(&mtxTranslate, 0.0f, 0.0f, 0.0f);
@@ -1479,7 +1483,9 @@ bool RayHitGround(D3DXVECTOR3 pos, D3DXVECTOR3 * HitPosition, D3DXVECTOR3 * Norm
 		D3DXVec3TransformCoord(&p1, &p1, &mtxWorld);
 		D3DXVec3TransformCoord(&p2, &p2, &mtxWorld);
 		
-		bool ans = RayCast(p0, p1, p2, start, end, &HitPositionTemp, &NormalTemp,caculatedNormal[i]);
+		//bool ans = RayCast(p0, p1, p2, start, end, &HitPositionTemp, &NormalTemp,caculatedNormal[i]);
+		bool ans = RayCast(p0, p2, p1, start, end, &HitPositionTemp, &NormalTemp);
+
 		if (ans) {
 			// Find nearest
 			float dis = D3DXVec3LengthSq(&(HitPositionTemp - pos));
@@ -1496,7 +1502,6 @@ bool RayHitGround(D3DXVECTOR3 pos, D3DXVECTOR3 * HitPosition, D3DXVECTOR3 * Norm
 				*HitPosition = HitPositionTemp;
 				*Normal = NormalTemp;
 			}
-			return true;
 		}
 	}
 
@@ -1530,12 +1535,16 @@ bool RayHitGroundWall(D3DXVECTOR3 pos, D3DXVECTOR3 forwardXY, D3DXVECTOR3 * HitP
 	// ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&mtxWorld);
 	// スケールを反映
-	D3DXMatrixScaling(&mtxScl, 20.0f, 20.0f, -20.0f);
+	D3DXVECTOR3 groundSCL = GetGroungModelSCL();
+	D3DXMatrixScaling(&mtxScl, groundSCL.x, groundSCL.y, groundSCL.z);
 	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxScl);
 
 	// 回転を反映
-	//D3DXMatrixRotationYawPitchRoll(&mtxRot, 0.0f, 0.0f, 0.0f);
-	//D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
+	float worldRotX = returnWorldRot(1);
+	float worldRotY = returnWorldRot(2);
+	float worldRotZ = returnWorldRot(3);
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, worldRotX, worldRotY, worldRotZ);
+	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
 
 	// 移動を反映
 	//D3DXMatrixTranslation(&mtxTranslate, 0.0f, 0.0f, 0.0f);
@@ -1558,7 +1567,9 @@ bool RayHitGroundWall(D3DXVECTOR3 pos, D3DXVECTOR3 forwardXY, D3DXVECTOR3 * HitP
 		D3DXVec3TransformCoord(&p1, &p1, &mtxWorld);
 		D3DXVec3TransformCoord(&p2, &p2, &mtxWorld);
 
-		bool ans = RayCast(p0, p1, p2, start, end, &HitPositionTemp, &NormalTemp, caculatedNormal[i]);
+		//bool ans = RayCast(p0, p1, p2, start, end, &HitPositionTemp, &NormalTemp, caculatedNormal[i]);
+		bool ans = RayCast(p0, p2, p1, start, end, &HitPositionTemp, &NormalTemp);
+
 		if (ans) {
 			// Find nearest
 			float dis = D3DXVec3LengthSq(&(HitPositionTemp - pos));

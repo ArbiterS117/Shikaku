@@ -71,7 +71,7 @@
 #define PLAYER_MUSH_JUMP_SPEED          (60.0f)
 #define	VALUE_SNADGRAVITY               (0.5f)		            
 #define	VALUE_SNADJUMP_GRAVITY          (7.5f)		            
-#define	VALUE_BOB_GRAVITY               (0.15f)		            
+#define	VALUE_BOB_GRAVITY               (0.01f)		            
 
 #define PLAYER_MAX_MOVE_SPEED_ICE       (25.0f)
 #define	VALUE_ICE_MOVE			        (0.2f)
@@ -83,7 +83,7 @@
 #define PLAYER_THROWING_TIME       (15)                      // カード投げる時間
 #define PLAYER_USEABILITYCD        (60)                      // カード能力を使うCD時間
 #define PLAYER_WATERABILITYCD      (10)                       // カード能力アピールCD時間
-#define PLAYER_BOBSTATETIME        (420)                     // 泡能力時間
+#define PLAYER_BOBSTATETIME        (4200)                     // 泡能力時間
 #define PLAYER_SANDSTATETIME       (1000)                    // 砂状態時間
 #define PLAYER_MOVESMOKECDTIME     (6)                       // 歩いての煙
 
@@ -98,6 +98,7 @@ static void AnimStatusUpdate(PLAYER &player);
 
 static void ChangeForceY(float force);
 static void MovingPlatPhysicsUpdate(PLAYER &player, int InRangeOBJNum, int *OBJInRangeList);
+
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
@@ -110,7 +111,7 @@ bool getFinalStar = false;
 D3DXVECTOR3 temp_player_leave_plat_speed;
 
 D3DXVECTOR3 playerRebornPos[12] = {
-	{350.0f, 550.0f, 0.0f},
+	{-200.0f, 550.0f, 0.0f},
 	{150.0f, 1550.0f, 7500.0f},
 	{122.0, 1000.0f, 14420.0f},
 	{1365.0f, 1050.0f, 24530.0f},
@@ -618,14 +619,16 @@ void PhysicsUpdate(PLAYER & player) {
 	//==============groundTest Raycast
 	D3DXVECTOR3 hit, normal;
 	bool rayHit = false;
-	if(player.InHeartWorldArea) rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_HeartWorld);
-	if(player.InHtoWArea)       rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_HtoW);
-	if(player.InWonderLandArea) rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_Wonderland);
-	if(player.InWonderLand2Area)rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_Wonderland2);
-	if(player.InWtoSArea)       rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_WtoS);
-	if(player.InSandWorldArea)  rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_SandWorld);
-	if(player.InStoSArea)       rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_StoS);
-	if(player.InSnowWorldArea)  rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_SnowWorld);
+	rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_Test);
+	//if(player.InHeartWorldArea) rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_HeartWorld);
+	//if(player.InHtoWArea)       rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_HtoW);
+	//if(player.InWonderLandArea) rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_Wonderland);
+	//if(player.InWonderLand2Area)rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_Wonderland2);
+	//if(player.InWtoSArea)       rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_WtoS);
+	//if(player.InSandWorldArea)  rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_SandWorld);
+	//if(player.InStoSArea)       rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_StoS);
+	//if(player.InSnowWorldArea)  rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_SnowWorld);
+	
 	if (rayHit) {
 		if (player.speed.y <= 0.0f) {
 			bool slopeANS = false;
@@ -803,14 +806,15 @@ void PhysicsUpdate(PLAYER & player) {
 	if (player.speed.x == 0.0f && player.speed.z == 0.0f) dirXZ =  player.dirXZ;
 	else  dirXZ = player.speed;
 	rayHit = false;
-	if(player.InHeartWorldArea) rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_HeartWorld);
-	if(player.InHtoWArea)       rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_HtoW);
-	if(player.InWonderLandArea) rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_Wonderland);
-	if(player.InWonderLand2Area)rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_Wonderland2);
-	if(player.InWtoSArea)       rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_WtoS);
-	if(player.InSandWorldArea)  rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_SandWorld);
-	if(player.InStoSArea)       rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_StoS);
-	if(player.InSnowWorldArea)  rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_SnowWorld);
+	rayHit += RayHitGroundWall(player.pos, dirXZ, &hit, &normal, GroundType_Test);
+	//if(player.InHeartWorldArea) rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_HeartWorld);
+	//if(player.InHtoWArea)       rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_HtoW);
+	//if(player.InWonderLandArea) rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_Wonderland);
+	//if(player.InWonderLand2Area)rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_Wonderland2);
+	//if(player.InWtoSArea)       rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_WtoS);
+	//if(player.InSandWorldArea)  rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_SandWorld);
+	//if(player.InStoSArea)       rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_StoS);
+	//if(player.InSnowWorldArea)  rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_SnowWorld);
 
 	if (rayHit) {
 		if (fabsf(normal.y) <= WALL_SLOPE_DEGREE) {
@@ -1042,20 +1046,20 @@ void CollisionUpdate(PLAYER & player)
 	//===ground Check Area
 	if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_HeartWorld)) g_Player.InHeartWorldArea = true;
 	else g_Player.InHeartWorldArea = false;
-	if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_HtoW)) g_Player.InHtoWArea = true;
-	else g_Player.InHtoWArea = false;
-	if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_WonderLand)) g_Player.InWonderLandArea = true;
-	else g_Player.InWonderLandArea = false;
-	if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_WonderLand2)) g_Player.InWonderLand2Area = true;
-	else g_Player.InWonderLand2Area = false;
-	if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_WtoS)) g_Player.InWtoSArea = true;
-	else g_Player.InWtoSArea = false;
-	if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_SandWorld)) g_Player.InSandWorldArea = true;
-	else g_Player.InSandWorldArea = false;
-	if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_StoS)) g_Player.InStoSArea = true;
-	else g_Player.InStoSArea = false;
-	if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_SnowWorld)) g_Player.InSnowWorldArea = true;
-	else g_Player.InSnowWorldArea = false;
+	//if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_HtoW)) g_Player.InHtoWArea = true;
+	//else g_Player.InHtoWArea = false;
+	//if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_WonderLand)) g_Player.InWonderLandArea = true;
+	//else g_Player.InWonderLandArea = false;
+	//if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_WonderLand2)) g_Player.InWonderLand2Area = true;
+	//else g_Player.InWonderLand2Area = false;
+	//if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_WtoS)) g_Player.InWtoSArea = true;
+	//else g_Player.InWtoSArea = false;
+	//if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_SandWorld)) g_Player.InSandWorldArea = true;
+	//else g_Player.InSandWorldArea = false;
+	//if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_StoS)) g_Player.InStoSArea = true;
+	//else g_Player.InStoSArea = false;
+	//if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_SnowWorld)) g_Player.InSnowWorldArea = true;
+	//else g_Player.InSnowWorldArea = false;
 
 	
 	
@@ -1394,4 +1398,8 @@ void MovingPlatPhysicsUpdate(PLAYER &player, int OBJNum, int *OBJInRange)
 	PrintDebugProc("\n\temp_player_leave_plat_speed_Y : %f\n\n", temp_player_leave_plat_speed.y);
 	PrintDebugProc("\n\temp_player_leave_plat_speed_Z : %f\n\n", temp_player_leave_plat_speed.z);
 
+}
+
+void setPlayerPosition(D3DXVECTOR3 pos) {
+	g_Player.pos = pos;
 }

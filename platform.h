@@ -34,7 +34,7 @@ enum enumPlatformType
 static D3DXVECTOR3 PlatformColliderSize[PlatformType_MAX] = {
 	{18.5f, 11.0f, 18.5f},    // normal
 	{20.0f, 20.0f, 20.0f},    // ice
-	{50.0f, 50.0f, 50.0f},    // tree1
+	{500.0f, 500.0f, 500.0f},    // tree1
 	{50.0f, 50.0f, 50.0f},    // tree2
 	{10.0f, 30.0f, 10.0f},    // tree3
 	{20.0f, 20.0f, 20.0f},    // block

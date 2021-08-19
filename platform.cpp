@@ -19,9 +19,9 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	MODEL_PLATFORM_NORMAL	    "data/MODEL/Block2x2.obj"	// 読み込むモデル名
+#define	MODEL_PLATFORM_NORMAL	    "data/MODEL/map.obj"	// 読み込むモデル名
 #define	MODEL_PLATFORM_ICE          "data/MODEL/icePlat.obj"   
-#define	MODEL_PLATFORM_T1           "data/MODEL/tree1.obj"     
+#define	MODEL_PLATFORM_T1           "data/MODEL/Test.obj"     
 #define	MODEL_PLATFORM_T2           "data/MODEL/tree2.obj"     
 #define	MODEL_PLATFORM_T3           "data/MODEL/tree3.obj"     
 #define	MODEL_PLATFORM_BLOCK        "data/MODEL/stoneBlock.obj"     

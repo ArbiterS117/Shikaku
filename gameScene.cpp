@@ -103,13 +103,13 @@ HRESULT InitGameScene(void)
 	CreateCollider3DBox(collider3DTag_fallDownArea, D3DXVECTOR3(0.0f, -6000.0f, 0.0f), 240000.0f, 4000.0f, 120000.0f, 0);
 
 	CreateCollider3DBox(collider3DTag_GroundArea_HeartWorld,  D3DXVECTOR3(0.0f, 0.0f, 2000.0f), 8000.0f, 8000.0f, 8000.0f, 0);
-	CreateCollider3DBox(collider3DTag_GroundArea_HtoW,        D3DXVECTOR3(0.0f, 0.0f, 10500.0f), 10000.0f, 8000.0f, 9000.0f, 0);
-	CreateCollider3DBox(collider3DTag_GroundArea_WonderLand,  D3DXVECTOR3(0.0f, 0.0f, 24500.0f), 9000.0f, 8000.0f, 19000.0f, 0);
-	CreateCollider3DBox(collider3DTag_GroundArea_WonderLand2, D3DXVECTOR3(-8000.0f, 0.0f, 24500.0f), 9000.0f, 10000.0f, 19000.0f, 0);
-	CreateCollider3DBox(collider3DTag_GroundArea_WtoS,        D3DXVECTOR3(-18000.0f, 0.0f, 24500.0f), 11000.0f, 10000.0f, 5000.0f, 0);
-	CreateCollider3DBox(collider3DTag_GroundArea_SandWorld,   D3DXVECTOR3(-34500.0f, 0.0f, 24500.0f), 22000.0f, 10000.0f, 20000.0f, 0);
-	CreateCollider3DBox(collider3DTag_GroundArea_StoS,        D3DXVECTOR3(-50250.0f, 0.0f, 24500.0f), 10650.0f, 10000.0f, 10000.0f, 0);
-	CreateCollider3DBox(collider3DTag_GroundArea_SnowWorld,   D3DXVECTOR3(-61000.0f, 0.0f, 24500.0f), 12000.0f, 20000.0f, 20000.0f, 0);
+	//CreateCollider3DBox(collider3DTag_GroundArea_HtoW,        D3DXVECTOR3(0.0f, 0.0f, 10500.0f), 10000.0f, 8000.0f, 9000.0f, 0);
+	//CreateCollider3DBox(collider3DTag_GroundArea_WonderLand,  D3DXVECTOR3(0.0f, 0.0f, 24500.0f), 9000.0f, 8000.0f, 19000.0f, 0);
+	//CreateCollider3DBox(collider3DTag_GroundArea_WonderLand2, D3DXVECTOR3(-8000.0f, 0.0f, 24500.0f), 9000.0f, 10000.0f, 19000.0f, 0);
+	//CreateCollider3DBox(collider3DTag_GroundArea_WtoS,        D3DXVECTOR3(-18000.0f, 0.0f, 24500.0f), 11000.0f, 10000.0f, 5000.0f, 0);
+	//CreateCollider3DBox(collider3DTag_GroundArea_SandWorld,   D3DXVECTOR3(-34500.0f, 0.0f, 24500.0f), 22000.0f, 10000.0f, 20000.0f, 0);
+	//CreateCollider3DBox(collider3DTag_GroundArea_StoS,        D3DXVECTOR3(-50250.0f, 0.0f, 24500.0f), 10650.0f, 10000.0f, 10000.0f, 0);
+	//CreateCollider3DBox(collider3DTag_GroundArea_SnowWorld,   D3DXVECTOR3(-61000.0f, 0.0f, 24500.0f), 12000.0f, 20000.0f, 20000.0f, 0);
 	
 
 	InitEditTool();
@@ -197,6 +197,8 @@ void UpdateGameScene(void)
 	
 
 	//========== game
+	UpdateGround();
+
 	// プレイヤーの更新処理
 	UpdatePlayer();
 
