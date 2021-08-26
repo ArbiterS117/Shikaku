@@ -96,6 +96,9 @@ HRESULT InitGameScene(void)
 	// 背面ポリゴンをカリング
 	SetCullingMode(CULL_MODE_BACK);
 
+	// ゲーム音楽の再生
+	PlaySound(SOUND_LABEL_BGM_1);
+
 	//===================SYS
 	InitParticle();
 

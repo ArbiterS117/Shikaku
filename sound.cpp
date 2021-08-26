@@ -32,6 +32,11 @@ DWORD g_aSizeAudio[SOUND_LABEL_MAX] = {};					// オーディオデータサイ�
 // 各音素材のパラメータ(-1 : BGM   0: SE)
 SOUNDPARAM g_aParam[SOUND_LABEL_MAX] =
 {
+	{ (char*)"data/BGM/Dungeon_1.wav", 0 },	    // BGM0
+	{ (char*)"data/BGM/Dungeon_2.wav", 0 },	    // BGM1
+	{ (char*)"data/BGM/horror_1.wav", 0 },	    // BGM2
+	{ (char*)"data/BGM/horror_2.wav", 0 },	    // BGM3
+	{ (char*)"data/BGM/Fantasy_1.wav", 0 },	    // BGM4
 	{ (char*)"data/SE/Jump.wav", 0 },	    // BGM0
 	{ (char*)"data/SE/Jump.wav", 0 },	    // BGM1
 	{ (char*)"data/SE/Jump.wav", 0 },	    // BGM2
@@ -247,6 +252,9 @@ void PlaySound(int label)
 		// オーディオバッファの削除
 		g_apSourceVoice[label]->FlushSourceBuffers();
 	}
+
+	// 音量調整
+	g_apSourceVoice[label]->SetVolume(0.1f);
 
 	// オーディオバッファの登録
 	g_apSourceVoice[label]->SubmitSourceBuffer(&buffer);

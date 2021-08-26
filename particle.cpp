@@ -78,7 +78,7 @@ enum enumParticleSprite
 	ParticleSprite_Bsmoke,
 };
 #define	SPRITE_lightBall	"data/TEXTURE/shadow000.jpg"	        // 読み込むスプライト名
-#define	SPRITE_dust         "data/TEXTURE/Dust Particle.png"
+#define	SPRITE_dust         "data/TEXTURE/smk.png"
 #define	SPRITE_star         "data/TEXTURE/star.png"
 #define	SPRITE_sun          "data/TEXTURE/sun.png"
 #define	SPRITE_wC           "data/TEXTURE/wCircle_P.png"
@@ -138,7 +138,8 @@ void UpdateParticle(void)
 	PLAYER *pPlayer = GetPlayer();
 	g_posBase = pPlayer->pos;
 
-	if (setContinueParticleCDTimer > 0) {
+	if (setContinueParticleCDTimer > 0)
+	{
 		setContinueParticleCDTimer -= 1;
 	}
 
@@ -155,6 +156,8 @@ void UpdateParticle(void)
 	{
 		for (int nCntParticle = 0; nCntParticle < MAX_PARTICLE; nCntParticle++)
 		{
+			straightUpdate(g_Particle[nCntParticle]);
+
 			if (g_Particle[nCntParticle].Use) {
 				switch (g_Particle[nCntParticle].particletype)
 				{

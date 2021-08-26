@@ -73,6 +73,9 @@ HRESULT InitTitle(void)
 	LoadUISprite(UISPRITE_B7, &g_UISprite[7], TEXTURE_WIDTH_BLOCK, TEXTURE_HEIGHT_BLOCK, 0.0f, 0.0f);
 	LoadUISprite(UISPRITE_PRESS_BTN, &g_UISprite[8], TEXTURE_WIDTH_BTN, TEXTURE_HEIGHT_BTN, SCREEN_WIDTH / 2, 380.0f);
 
+	// ゲーム音楽の再生
+	PlaySound(SOUND_LABEL_BGM_5);
+
 	///////////////////////////////////////////////////////////
 	ID3D11Device *pDevice = GetDevice();
 
