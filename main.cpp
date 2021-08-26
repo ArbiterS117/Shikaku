@@ -10,6 +10,7 @@
 #include "input.h"
 #include "sound.h"
 
+#include "titlelogo.h"
 #include "title.h"
 #include "tutorial.h"
 #include "gameScene.h"
@@ -337,6 +338,11 @@ void Update(void)
 	// モードによって処理を分ける
 	switch (g_Mode)
 	{
+
+	case MODE_TITLELOGO:
+		UpdateTitlelogo();
+		break;
+
 	case MODE_TITLE:		// タイトル画面の更新
 		UpdateTitle();
 		break;
@@ -376,6 +382,10 @@ void Draw(void)
 	// モードによって処理を分ける
 	switch (g_Mode)
 	{
+	case MODE_TITLELOGO:	// タイトルロゴ画面の描画
+		DrawTitlelogo();
+		break;
+
 	case MODE_TITLE:		// タイトル画面の描画
 		DrawTitle();
 		break;
@@ -497,6 +507,11 @@ void SetMode(MODE mode)
 
 	switch (g_Mode)
 	{
+	case MODE_TITLELOGO:
+		// タイトル画面の初期化
+		InitTitlelogo();
+		break;
+
 	case MODE_TITLE:
 		// タイトル画面の初期化
 		InitTitle();

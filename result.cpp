@@ -158,7 +158,7 @@ void UpdateResult(void)
 	{
 			
 		if (confirmStep > 4) {
-			SetFade(FADE_OUT, MODE_TITLE);
+			SetFade(FADE_OUT, MODE_TITLELOGO);
 			PlaySound(SOUND_LABEL_SE_bye);
 		}
 		else {

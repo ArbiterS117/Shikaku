@@ -63,7 +63,8 @@ struct TRANSFORM
 
 typedef enum
 {
-	MODE_TITLE = 0,							// タイトル画面
+	MODE_TITLELOGO = 0,						// タイトルロゴ画面
+	MODE_TITLE,								// タイトル画面
 	MODE_TUTORIAL,                          // ゲーム説明画面
 	MODE_GAME,								// ゲーム画面
 	MODE_RESULT,							// リザルト画面

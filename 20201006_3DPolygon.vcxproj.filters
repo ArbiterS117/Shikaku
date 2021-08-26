@@ -120,6 +120,9 @@
     <ClCompile Include="ground.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
+    <ClCompile Include="titlelogo.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="renderer.h">
@@ -225,6 +228,9 @@
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="ground.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="titlelogo.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>

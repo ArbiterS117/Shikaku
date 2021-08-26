@@ -51,6 +51,7 @@
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="sprite.cpp" />
     <ClCompile Include="title.cpp" />
+    <ClCompile Include="titlelogo.cpp" />
     <ClCompile Include="tree.cpp" />
     <ClCompile Include="tutorial.cpp" />
     <ClCompile Include="UISprite.cpp" />
@@ -88,6 +89,7 @@
     <ClInclude Include="sound.h" />
     <ClInclude Include="sprite.h" />
     <ClInclude Include="title.h" />
+    <ClInclude Include="titlelogo.h" />
     <ClInclude Include="tree.h" />
     <ClInclude Include="tutorial.h" />
     <ClInclude Include="UISprite.h" />
