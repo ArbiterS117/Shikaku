@@ -27,8 +27,8 @@
 #define TEXTURE_WIDTH_RANKMARKS     (400)			// ランクマークサイズ
 #define TEXTURE_HEIGHT_RANKMARKS    (400)			// 
 
-#define TEXTURE_WIDTH_BLOCK			(64)	        // ブロック背景サイズ
-#define TEXTURE_HEIGHT_BLOCK		(64)	        // 
+#define TEXTURE_WIDTH_BLOCK			(96)	        // ブロック背景サイズ
+#define TEXTURE_HEIGHT_BLOCK		(96)	        // 
 #define BLOCK_MOVE_TIME             (TEXTURE_HEIGHT_BLOCK * 2)
 
 #define TEXTURE_WIDTH_BTN			(400)			// ボタンサイズ
@@ -43,7 +43,7 @@
 
 #define MAX_UISPRITE                (15)
 
-#define UISPRITE_BLOCK             "data/TEXTURE/Brown.png"
+#define UISPRITE_BLOCK             "data/TEXTURE/title_1.jpg"
 #define UISPRITE_CLEARTIME         "data/TEXTURE/result/clearTime.png"
 #define UISPRITE_DEATHCNT          "data/TEXTURE/result/deathCount.png"
 #define UISPRITE_RANK              "data/TEXTURE/result/rank.png"
@@ -159,7 +159,7 @@ void UpdateResult(void)
 			
 		if (confirmStep > 4) {
 			SetFade(FADE_OUT, MODE_TITLE);
-			PlaySound(SOUND_LABEL_SE_start);
+			PlaySound(SOUND_LABEL_SE_bye);
 		}
 		else {
 			confirmStep += 1;

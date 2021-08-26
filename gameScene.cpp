@@ -97,7 +97,7 @@ HRESULT InitGameScene(void)
 	SetCullingMode(CULL_MODE_BACK);
 
 	// ゲーム音楽の再生
-	PlaySound(SOUND_LABEL_BGM_1);
+	PlaySound(SOUND_LABEL_BGM_2);
 
 	//===================SYS
 	InitParticle();

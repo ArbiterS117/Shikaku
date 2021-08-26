@@ -4,7 +4,8 @@
 //
 //=============================================================================
 #include "sound.h"
-
+#include "input.h"
+#include "debugproc.h"
 //*****************************************************************************
 // パラメータ構造体定義
 //*****************************************************************************
@@ -29,14 +30,17 @@ IXAudio2SourceVoice *g_apSourceVoice[SOUND_LABEL_MAX] = {};	// ソースボイ�
 BYTE *g_apDataAudio[SOUND_LABEL_MAX] = {};					// オーディオデータ
 DWORD g_aSizeAudio[SOUND_LABEL_MAX] = {};					// オーディオデータサイズ
 
+static float vol;
+
 // 各音素材のパラメータ(-1 : BGM   0: SE)
 SOUNDPARAM g_aParam[SOUND_LABEL_MAX] =
 {
-	{ (char*)"data/BGM/Dungeon_1.wav", 0 },	    // BGM0
-	{ (char*)"data/BGM/Dungeon_2.wav", 0 },	    // BGM1
-	{ (char*)"data/BGM/horror_1.wav", 0 },	    // BGM2
-	{ (char*)"data/BGM/horror_2.wav", 0 },	    // BGM3
-	{ (char*)"data/BGM/Fantasy_1.wav", 0 },	    // BGM4
+	{ (char*)"data/BGM/Dungeon_1.wav", 0 },	        // BGM1
+	{ (char*)"data/BGM/Dungeon_2.wav", 0 },	        // BGM2
+	{ (char*)"data/BGM/horror_1.wav", 0 },	        // BGM3
+	{ (char*)"data/BGM/horror_2.wav", 0 },	        // BGM4
+	{ (char*)"data/BGM/heaven.wav", 0 },	        // BGM5
+	{ (char*)"data/BGM/Tin_coffee_maker.wav", 0 },	// BGM6
 	{ (char*)"data/SE/Jump.wav", 0 },	    // BGM0
 	{ (char*)"data/SE/Jump.wav", 0 },	    // BGM1
 	{ (char*)"data/SE/Jump.wav", 0 },	    // BGM2
@@ -49,6 +53,7 @@ SOUNDPARAM g_aParam[SOUND_LABEL_MAX] =
 	{ (char*)"data/SE/hit2.wav", 0 },	    // 撃った2
 	{ (char*)"data/SE/UseCard.wav", 0 },	// カードアビリティ発動
 	{ (char*)"data/SE/MagicSE.wav", 0 },	// Star
+	{ (char*)"data/SE/「また遊んでね」 .wav", 0 },	// シャットダウン
 };
 
 //=============================================================================
@@ -57,6 +62,8 @@ SOUNDPARAM g_aParam[SOUND_LABEL_MAX] =
 bool InitSound(HWND hWnd)
 {
 	HRESULT hr;
+
+	vol = 0.1f;
 
 	// COMライブラリの初期化
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
@@ -227,6 +234,38 @@ void UninitSound(void)
 	CoUninitialize();
 }
 
+void UpdateSound(void)
+{
+	// 音を上げる
+	if (GetKeyboardTrigger(DIK_8))
+	{
+		vol = vol + 0.01f;
+	}
+	// 音を下げる
+	if (GetKeyboardTrigger(DIK_9))
+	{
+		vol = vol - 0.01f;
+	}
+
+	// 最大値1、最小値0
+	if (vol > 1.0f)
+	{
+		vol = 1.0f;
+	}
+	if (vol < 0.0f)
+	{
+		vol = 0.0f;
+	}
+
+	// 全てのサウンドに音量を設定
+	for (int i = 0; i < SOUND_LABEL_MAX; i++)
+	{
+		// 音量調整
+		g_apSourceVoice[i]->SetVolume(vol);
+	}
+}
+
+
 //=============================================================================
 // セグメント再生(再生中なら停止)
 //=============================================================================
@@ -254,7 +293,7 @@ void PlaySound(int label)
 	}
 
 	// 音量調整
-	g_apSourceVoice[label]->SetVolume(0.1f);
+	g_apSourceVoice[label]->SetVolume(vol);
 
 	// オーディオバッファの登録
 	g_apSourceVoice[label]->SubmitSourceBuffer(&buffer);

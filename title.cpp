@@ -29,13 +29,13 @@
 
 #define BLOCK_MOVE_TIME             (TEXTURE_HEIGHT_BLOCK * 2)
 
-#define MAX_UISPRITE                (9)
+#define MAX_UISPRITE                (6)
 
-#define UISPRITE_TITLE             "data/TEXTURE/LOGO1.png"
-#define UISPRITE_B1                "data/TEXTURE/Blue.png"  
-#define UISPRITE_B2                "data/TEXTURE/Gray.png"  
-#define UISPRITE_B3                "data/TEXTURE/Green.png" 
-#define UISPRITE_B4                "data/TEXTURE/Brown.png" 
+#define UISPRITE_TITLE             "data/TEXTURE/Maze_of_Antitower.png"
+#define UISPRITE_B1                "data/TEXTURE/title_2.jpg"  
+#define UISPRITE_B2                "data/TEXTURE/title_3.jpg"  
+#define UISPRITE_B3                "data/TEXTURE/title_4.jpg" 
+#define UISPRITE_B4                "data/TEXTURE/title_5.png" 
 #define UISPRITE_B5                "data/TEXTURE/Pink.png"  
 #define UISPRITE_B6                "data/TEXTURE/Purple.png"
 #define UISPRITE_B7                "data/TEXTURE/Yellow.png"
@@ -68,10 +68,11 @@ HRESULT InitTitle(void)
 	LoadUISprite(UISPRITE_B2, &g_UISprite[2], TEXTURE_WIDTH_BLOCK, TEXTURE_HEIGHT_BLOCK, 0.0f, 0.0f);
 	LoadUISprite(UISPRITE_B3, &g_UISprite[3], TEXTURE_WIDTH_BLOCK, TEXTURE_HEIGHT_BLOCK, 0.0f, 0.0f);
 	LoadUISprite(UISPRITE_B4, &g_UISprite[4], TEXTURE_WIDTH_BLOCK, TEXTURE_HEIGHT_BLOCK, 0.0f, 0.0f);
-	LoadUISprite(UISPRITE_B5, &g_UISprite[5], TEXTURE_WIDTH_BLOCK, TEXTURE_HEIGHT_BLOCK, 0.0f, 0.0f);
-	LoadUISprite(UISPRITE_B6, &g_UISprite[6], TEXTURE_WIDTH_BLOCK, TEXTURE_HEIGHT_BLOCK, 0.0f, 0.0f);
-	LoadUISprite(UISPRITE_B7, &g_UISprite[7], TEXTURE_WIDTH_BLOCK, TEXTURE_HEIGHT_BLOCK, 0.0f, 0.0f);
-	LoadUISprite(UISPRITE_PRESS_BTN, &g_UISprite[8], TEXTURE_WIDTH_BTN, TEXTURE_HEIGHT_BTN, SCREEN_WIDTH / 2, 380.0f);
+	LoadUISprite(UISPRITE_PRESS_BTN, &g_UISprite[5], TEXTURE_WIDTH_BTN, TEXTURE_HEIGHT_BTN, SCREEN_WIDTH / 2, 380.0f);
+	//LoadUISprite(UISPRITE_B5, &g_UISprite[5], TEXTURE_WIDTH_BLOCK, TEXTURE_HEIGHT_BLOCK, 0.0f, 0.0f);
+	//LoadUISprite(UISPRITE_B6, &g_UISprite[6], TEXTURE_WIDTH_BLOCK, TEXTURE_HEIGHT_BLOCK, 0.0f, 0.0f);
+	//LoadUISprite(UISPRITE_B7, &g_UISprite[7], TEXTURE_WIDTH_BLOCK, TEXTURE_HEIGHT_BLOCK, 0.0f, 0.0f);
+	//LoadUISprite(UISPRITE_PRESS_BTN, &g_UISprite[8], TEXTURE_WIDTH_BTN, TEXTURE_HEIGHT_BTN, SCREEN_WIDTH / 2, 380.0f);
 
 	// ゲーム音楽の再生
 	PlaySound(SOUND_LABEL_BGM_5);
@@ -108,7 +109,7 @@ void UpdateTitle(void)
 	if (blockMoveTimer >= BLOCK_MOVE_TIME) {
 		blockMoveTimer = 0;
 		blocktype += 1;
-		if (blocktype > 7)blocktype = 1;
+		if (blocktype > 4)blocktype = 1;
 		// scale
 		scalesize = TEXTURE_BLOCK_SCALE;
 	}
@@ -162,13 +163,13 @@ void DrawTitle(void)
 		// １枚のポリゴンの頂点とテクスチャ座標を設定
 		if (blockMoveTimer <= BLOCK_MOVE_TIME / 2) {
 			float a = (float)blockMoveTimer / (float)(BLOCK_MOVE_TIME / 2.0f);
-			g_UISprite[8].Material.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, a);
+			g_UISprite[5].Material.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, a);
 		}
 		else {
 			float a = (float)blockMoveTimer / (float)(BLOCK_MOVE_TIME / 2.0f) - 1.0f;
-			g_UISprite[8].Material.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1-a);
+			g_UISprite[5].Material.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1-a);
 		}
-		DrawUISprite(&g_UISprite[8]);
+		DrawUISprite(&g_UISprite[5]);
 	}
 
 	SetLightEnable(true);

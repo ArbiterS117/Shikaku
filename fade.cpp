@@ -15,7 +15,7 @@
 #define TEXTURE_HEIGHT				(SCREEN_HEIGHT)	// 
 #define TEXTURE_MAX					(1)				// テクスチャの数
 
-#define	FADE_RATE					(0.02f)			// フェード係数
+#define	FADE_RATE					(0.01f)			// フェード係数
 
 //*****************************************************************************
 // プロトタイプ宣言

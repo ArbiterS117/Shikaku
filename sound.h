@@ -14,11 +14,12 @@
 //*****************************************************************************
 enum
 {
-	SOUND_LABEL_BGM_1,	// BGM0
-	SOUND_LABEL_BGM_2,	// BGM0
-	SOUND_LABEL_BGM_3,	// BGM0
-	SOUND_LABEL_BGM_4,	// BGM0
-	SOUND_LABEL_BGM_5,	// BGM0
+	SOUND_LABEL_BGM_1,	// BGM1
+	SOUND_LABEL_BGM_2,	// BGM2
+	SOUND_LABEL_BGM_3,	// BGM3
+	SOUND_LABEL_BGM_4,	// BGM4
+	SOUND_LABEL_BGM_5,	// BGM5
+	SOUND_LABEL_BGM_6,	// BGM6
 	SOUND_LABEL_BGM_sample000,	// BGM0
 	SOUND_LABEL_BGM_sample001,	// BGM1
 	SOUND_LABEL_BGM_sample002,	// BGM2
@@ -31,6 +32,7 @@ enum
 	SOUND_LABEL_SE_hit2,		// 撃った2
 	SOUND_LABEL_SE_usecard,     // カードアビリティ発動 
 	SOUND_LABEL_SE_getStar,     // Star 
+	SOUND_LABEL_SE_bye,         // また遊んでね
 	SOUND_LABEL_MAX,
 };
 
@@ -39,6 +41,7 @@ enum
 //*****************************************************************************
 bool InitSound(HWND hWnd);
 void UninitSound(void);
+void UpdateSound(void);
 void PlaySound(int label);
 void StopSound(int label);
 void StopSound(void);

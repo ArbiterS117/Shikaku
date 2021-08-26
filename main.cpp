@@ -330,6 +330,10 @@ void Update(void)
 	// カメラ更新
 	UpdateCamera();
 
+	// サウンドの更新
+	UpdateSound();
+
+
 	// モードによって処理を分ける
 	switch (g_Mode)
 	{
