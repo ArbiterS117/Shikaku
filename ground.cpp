@@ -9,6 +9,7 @@
 #include "player.h"
 #include "input.h"
 #include "debugproc.h"
+#include "camera.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -40,12 +41,18 @@
 #define Move_X          (0)
 #define Move_Y          (0)
 #define Move_Z          (0)
+
+#define VIEW_ROTX_MAX   (D3DX_PI * 0.45f)
+#define VIEW_ROTX_MIN   (-D3DX_PI * 0.45f)
+
+#define WORLDROTATEMAG		(0.0003f)
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
 static DX11_MODEL			g_Model[MAX_MODEL];						// モデル情報
 
 D3DXVECTOR3 worldRot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+D3DXVECTOR3 deltaRot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 float skyRot = 0.0f;
 float a = 0.0f;
@@ -111,11 +118,12 @@ void UpdateGround(void)
 {
 	PrintDebugProc("\n\n worldRotX:%f, worldRotX:%f, worldRotX:%f\n\n", worldRot.x/ D3DX_PI, worldRot.y/ D3DX_PI, worldRot.z/ D3DX_PI);
 
+	bool wrm = GetWorldRotateMode();
+
 	bool isRoted = false;
-	D3DXVECTOR3 deltaRot = D3DXVECTOR3(0.0f,0.0f,0.0f);
 
 	//TEST rot
-	if (GetKeyboardTrigger(DIK_UP)) {
+	/*if (GetKeyboardTrigger(DIK_UP)) {
 		deltaRot.y += 0.5f * D3DX_PI;
 		isRoted = true;
 	}
@@ -138,16 +146,40 @@ void UpdateGround(void)
 	else if (GetKeyboardTrigger(DIK_V)) {
 		deltaRot.z -= 0.5f * D3DX_PI;
 		isRoted = true;
+	}*/
+
+	if (wrm)
+	{
+		if (IsMouseCenterPressed())
+		{
+			//ShowCursor(true);
+			float dx = GetMousedX();
+			float dy = GetMousedY();
+			deltaRot.y -= dy * WORLDROTATEMAG;
+			deltaRot.x -= dx * WORLDROTATEMAG;
+			
+			isRoted = true;
+			if (deltaRot.y < -D3DX_PI) deltaRot.y += D3DX_PI * 2.0f;
+			if (deltaRot.y > D3DX_PI)  deltaRot.y -= D3DX_PI * 2.0f;
+			if (deltaRot.x < -D3DX_PI) deltaRot.x += D3DX_PI * 2.0f;
+			if (deltaRot.x > D3DX_PI)  deltaRot.x -= D3DX_PI * 2.0f;
+			PrintDebugProc("\n\n deltaRot.x:%f, deltaRot.y:%f ,deltaRot.z:%f\n\n", deltaRot.x, deltaRot.y, deltaRot.z);
+		}
 	}
 
 	if (isRoted) {
+
 		worldRot += deltaRot;
+		if (worldRot.y < -D3DX_PI) worldRot.y += D3DX_PI * 2.0f;
+		if (worldRot.y > D3DX_PI)  worldRot.y -= D3DX_PI * 2.0f;
+		if (worldRot.x < -D3DX_PI) worldRot.x += D3DX_PI * 2.0f;
+		if (worldRot.x > D3DX_PI)  worldRot.x -= D3DX_PI * 2.0f;
+
+		//auto temp = worldRot + deltaRot;
 		D3DXMATRIX mtxRot, mtxTranslate;
 		D3DXMATRIX mtxWorld;
-		D3DXVECTOR3 playerNewPos;
+		
 		D3DXVECTOR3 playerOriPos = GetPlayer()->pos;
-		// ワールドマトリックスの初期化
-		//D3DXMatrixIdentity(&mtxWorld);
 
 		// 移動を反映
 		D3DXMatrixTranslation(&mtxTranslate, playerOriPos.x, playerOriPos.y, playerOriPos.z); // have to put the model at (0,0,0)
@@ -157,9 +189,14 @@ void UpdateGround(void)
 		D3DXMatrixRotationYawPitchRoll(&mtxRot, deltaRot.x, deltaRot.y, deltaRot.z);
 		D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
 
-		D3DXVec3TransformCoord(&playerNewPos, &playerNewPos, &mtxWorld);
-
-		setPlayerPosition(playerNewPos);
+		
+		if (!GetWorldRotateMode())
+		{
+			D3DXVECTOR3 playerNewPos;
+			D3DXVec3TransformCoord(&playerNewPos, &playerNewPos, &mtxWorld);
+			setPlayerPosition(playerNewPos);
+		}
+		
 	}
 }
 
@@ -182,6 +219,7 @@ void DrawGround(void)
 	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxScl);
 
 	// 回転を反映
+	//auto temp = worldRot + deltaRot;
 	D3DXMatrixRotationYawPitchRoll(&mtxRot, worldRot.x, worldRot.y, worldRot.z);
 	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
 
@@ -538,3 +576,40 @@ void InitNormals()
 
 }
 
+void AdjustDeltaRot() {
+
+	if (-0.25 * D3DX_PI < worldRot.x && worldRot.x <= 0.25 * D3DX_PI)
+	{
+		worldRot.x = 0.0f;
+	} 
+	else if (-0.75 * D3DX_PI < worldRot.x && worldRot.x <= -0.25 * D3DX_PI)
+	{
+		worldRot.x = -0.5 * D3DX_PI;
+	}
+	else if (0.25 * D3DX_PI < worldRot.x && worldRot.x <= 0.75 * D3DX_PI)
+	{
+		worldRot.x = 0.5 * D3DX_PI;
+	}
+	else if ((0.75 * D3DX_PI < worldRot.x && worldRot.x <= D3DX_PI) || (-0.75 * D3DX_PI > worldRot.x && worldRot.x >= -D3DX_PI))
+	{
+		worldRot.x = D3DX_PI;
+	}
+
+
+	if ((-0.25 * D3DX_PI < worldRot.y && worldRot.y <= 0.25 * D3DX_PI))
+	{
+		worldRot.y = 0.0f;
+	}
+	else if (-0.75 * D3DX_PI < worldRot.y && worldRot.y <= -0.25 * D3DX_PI)
+	{
+		worldRot.y = -0.5 * D3DX_PI;
+	}
+	else if (0.25 * D3DX_PI < worldRot.y && worldRot.y <= 0.75 * D3DX_PI)
+	{
+		worldRot.y = 0.5 * D3DX_PI;
+	}
+	else if ((0.75 * D3DX_PI < worldRot.y && worldRot.y <= D3DX_PI) || (-0.75 * D3DX_PI > worldRot.y && worldRot.y >= -D3DX_PI))
+	{
+		worldRot.y = D3DX_PI;
+	}
+}

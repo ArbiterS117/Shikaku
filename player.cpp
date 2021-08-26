@@ -443,95 +443,98 @@ void InputUpdate(void) {
 	}
 
 	//Fire
-	if (IsMouseLeftTriggered() || GetKeyboardTrigger(DIK_T)) {
-		//カードを投げる
-		if (g_Player.cardInHand && g_Player.canThrowCard && !g_Player.isInSandStatus) {
-			if (D3DXVec3Length(&InputDir) != 0) { // Turn back 180°& throw 
-				g_Player.cardBulletID = SetBullet(BulletType_card, g_Player.pos, InputDir, g_Player.playerAbility);
-				g_Player.dirXZ = InputDir;
-			}
-			else g_Player.cardBulletID = SetBullet(BulletType_card, g_Player.pos, g_Player.dirXZ, g_Player.playerAbility); // stop & throw
-			if (g_Player.cardBulletID == -1) return; // if bullet overload or create false
-			g_Player.speed = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-			g_Player.isThrowing = true;
-			if (g_Player.isGround == false)ChangeForceY(PLAYER_THROWING_JUMP_SPEED); // jump a bit is inAir
-			g_Player.cardInHand = false;
-			g_Player.playerAbility = CardAbility_none;
-			g_Player.canThrowCard = false;
-			// cancel bobstatus
-			if (g_Player.isInBobStatus) {
-				g_Player.bobStateTimer = 0;
-				g_Player.isInBobStatus = false;
-				g_Player.gravityScale = VALUE_GRAVITY;
-				g_Player.maxMoveSpeed = PLAYER_MAX_MOVE_SPEED;
-			}
-			PlaySound(SOUND_LABEL_SE_throwcard);
-		}
-		//カードを戻させる
-		else {
-			BULLET *Bullet = GetBullet();
-			if (Bullet[g_Player.cardBulletID].canSummonBack) {
-				Bullet[g_Player.cardBulletID].isSummonBack = true;
-			}
-			g_Player.bobStateTimer = 0;
-			g_Player.isInBobStatus = false;
-			g_Player.gravityScale = VALUE_GRAVITY;
-			g_Player.maxMoveSpeed = PLAYER_MAX_MOVE_SPEED;
-		}
+	if (IsMouseLeftPressed() ) {//|| GetKeyboardTrigger(DIK_T)
+
+		SetCameraWorldRotateView(false);
+		////カードを投げる
+		//if (g_Player.cardInHand && g_Player.canThrowCard && !g_Player.isInSandStatus) {
+		//	if (D3DXVec3Length(&InputDir) != 0) { // Turn back 180°& throw 
+		//		g_Player.cardBulletID = SetBullet(BulletType_card, g_Player.pos, InputDir, g_Player.playerAbility);
+		//		g_Player.dirXZ = InputDir;
+		//	}
+		//	else g_Player.cardBulletID = SetBullet(BulletType_card, g_Player.pos, g_Player.dirXZ, g_Player.playerAbility); // stop & throw
+		//	if (g_Player.cardBulletID == -1) return; // if bullet overload or create false
+		//	g_Player.speed = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		//	g_Player.isThrowing = true;
+		//	if (g_Player.isGround == false)ChangeForceY(PLAYER_THROWING_JUMP_SPEED); // jump a bit is inAir
+		//	g_Player.cardInHand = false;
+		//	g_Player.playerAbility = CardAbility_none;
+		//	g_Player.canThrowCard = false;
+		//	// cancel bobstatus
+		//	if (g_Player.isInBobStatus) {
+		//		g_Player.bobStateTimer = 0;
+		//		g_Player.isInBobStatus = false;
+		//		g_Player.gravityScale = VALUE_GRAVITY;
+		//		g_Player.maxMoveSpeed = PLAYER_MAX_MOVE_SPEED;
+		//	}
+		//	PlaySound(SOUND_LABEL_SE_throwcard);
+		//}
+		////カードを戻させる
+		//else {
+		//	BULLET *Bullet = GetBullet();
+		//	if (Bullet[g_Player.cardBulletID].canSummonBack) {
+		//		Bullet[g_Player.cardBulletID].isSummonBack = true;
+		//	}
+		//	g_Player.bobStateTimer = 0;
+		//	g_Player.isInBobStatus = false;
+		//	g_Player.gravityScale = VALUE_GRAVITY;
+		//	g_Player.maxMoveSpeed = PLAYER_MAX_MOVE_SPEED;
+		//}
 	}
-	if (IsMouseRightTriggered() || GetKeyboardTrigger(DIK_G)) {
+	if (IsMouseRightPressed() ) {//|| GetKeyboardTrigger(DIK_G)
+		SetCameraWorldRotateView(true);
 		// Card in Hand
-		if (g_Player.cardInHand == true && g_Player.canUseCard && !g_Player.isInSandStatus) {
-			switch (g_Player.playerAbility)
-			{
-			case CardAbility_wind:
-				SetBullet(BulletType_windStorm, g_Player.pos, g_Player.dirXZ);
-				g_Player.canUseCard = false;
-				g_Player.playerAbility = CardAbility_none;
-				break;
-			case CardAbility_water:
-				if (!g_Player.isInBobStatus) {
-					SetBullet(BulletType_waterBobFloat, g_Player.pos, g_Player.dirXZ);
-					ChangeForceY(PLAYER_BOB_JUMP_SPEED);
-					PlaySound(SOUND_LABEL_SE_usecard);
-					PlaySound(SOUND_LABEL_SE_aqua);
-					g_Player.isInBobStatus = true;
-					g_Player.canUseCard = false;
-					g_Player.playerAbility = CardAbility_none;
-				}
-				break;
-			}
-		}
-		// Card outside
-		else if (g_Player.cardInHand == false && g_Player.canUseCard) {
-			BULLET *Bullet = GetBullet();
-			if (Bullet[g_Player.cardBulletID].Use) {
-				switch (Bullet[g_Player.cardBulletID].cardAbility)
-				{
-				case CardAbility_wind:
-					SetBullet(BulletType_windStorm, Bullet[g_Player.cardBulletID].pos, g_Player.dirXZ);
-					g_Player.cardInHand = true;
-					//g_Player.playerAbility = Bullet[g_Player.cardBulletID].cardAbility;
-					ReleaseBullet(g_Player.cardBulletID);
-					g_Player.canUseCard = false;
-					break;
-				case CardAbility_water:
-					SetBullet(BulletType_waterBob, Bullet[g_Player.cardBulletID].pos, g_Player.dirXZ);
-					g_Player.cardInHand = true;
-					//g_Player.playerAbility = Bullet[g_Player.cardBulletID].cardAbility;
-					ReleaseBullet(g_Player.cardBulletID);
-					g_Player.canUseCard = false;
-					PlaySound(SOUND_LABEL_SE_usecard);
-					PlaySound(SOUND_LABEL_SE_aqua);
-					break;
-				}
-			}
-		}
-		//other
-		if (g_Player.isInBobStatus) {
-			ChangeForceY(PLAYER_BOB_JUMP_SPEED);
-			PlaySound(SOUND_LABEL_SE_jump);
-		}
+		//if (g_Player.cardInHand == true && g_Player.canUseCard && !g_Player.isInSandStatus) {
+		//	switch (g_Player.playerAbility)
+		//	{
+		//	case CardAbility_wind:
+		//		SetBullet(BulletType_windStorm, g_Player.pos, g_Player.dirXZ);
+		//		g_Player.canUseCard = false;
+		//		g_Player.playerAbility = CardAbility_none;
+		//		break;
+		//	case CardAbility_water:
+		//		if (!g_Player.isInBobStatus) {
+		//			SetBullet(BulletType_waterBobFloat, g_Player.pos, g_Player.dirXZ);
+		//			ChangeForceY(PLAYER_BOB_JUMP_SPEED);
+		//			PlaySound(SOUND_LABEL_SE_usecard);
+		//			PlaySound(SOUND_LABEL_SE_aqua);
+		//			g_Player.isInBobStatus = true;
+		//			g_Player.canUseCard = false;
+		//			g_Player.playerAbility = CardAbility_none;
+		//		}
+		//		break;
+		//	}
+		//}
+		//// Card outside
+		//else if (g_Player.cardInHand == false && g_Player.canUseCard) {
+		//	BULLET *Bullet = GetBullet();
+		//	if (Bullet[g_Player.cardBulletID].Use) {
+		//		switch (Bullet[g_Player.cardBulletID].cardAbility)
+		//		{
+		//		case CardAbility_wind:
+		//			SetBullet(BulletType_windStorm, Bullet[g_Player.cardBulletID].pos, g_Player.dirXZ);
+		//			g_Player.cardInHand = true;
+		//			//g_Player.playerAbility = Bullet[g_Player.cardBulletID].cardAbility;
+		//			ReleaseBullet(g_Player.cardBulletID);
+		//			g_Player.canUseCard = false;
+		//			break;
+		//		case CardAbility_water:
+		//			SetBullet(BulletType_waterBob, Bullet[g_Player.cardBulletID].pos, g_Player.dirXZ);
+		//			g_Player.cardInHand = true;
+		//			//g_Player.playerAbility = Bullet[g_Player.cardBulletID].cardAbility;
+		//			ReleaseBullet(g_Player.cardBulletID);
+		//			g_Player.canUseCard = false;
+		//			PlaySound(SOUND_LABEL_SE_usecard);
+		//			PlaySound(SOUND_LABEL_SE_aqua);
+		//			break;
+		//		}
+		//	}
+		//}
+		////other
+		//if (g_Player.isInBobStatus) {
+		//	ChangeForceY(PLAYER_BOB_JUMP_SPEED);
+		//	PlaySound(SOUND_LABEL_SE_jump);
+		//}
 	}
 
 	//===========debug

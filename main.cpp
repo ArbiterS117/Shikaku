@@ -532,13 +532,27 @@ void mouseUpdate()
 
 	POINT CPoint;
 	GetCursorPos(&CPoint);
+	auto oldX = g_MouseX;
+	auto oldY = g_MouseY;
+
 	g_MouseX = CPoint.x;
 	g_MouseY = CPoint.y;
 
-	g_MousedX = g_MouseX - SCREEN_CENTER_X;
-	g_MousedY = g_MouseY - SCREEN_CENTER_Y;
+	
+	if (GetWorldRotateMode())
+	{
+		g_MousedX = g_MouseX - oldX;
+		g_MousedY = g_MouseY - oldY;
 
-	SetCursorPos(SCREEN_CENTER_X, SCREEN_CENTER_Y);
+		SetCursorPos(g_MouseX, g_MouseY);
+	}
+	else
+	{
+		g_MousedX = g_MouseX - SCREEN_CENTER_X;
+		g_MousedY = g_MouseY - SCREEN_CENTER_Y;
+		SetCursorPos(SCREEN_CENTER_X, SCREEN_CENTER_Y);
+	}
+	
 
 
 }
@@ -553,7 +567,8 @@ void checkFocus(HWND hwnd)
 		g_mouseActive = false;
 
 
-	if (g_mouseActive) { mouseUpdate(); ShowCursor(false); }
-	else ShowCursor(true);
+	if (g_mouseActive) { 
+		mouseUpdate(); 
+	}
 
 }

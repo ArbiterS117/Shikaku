@@ -8,6 +8,7 @@
 #include "input.h"
 #include "camera.h"
 #include "player.h"
+#include "ground.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -15,6 +16,11 @@
 #define	POS_X_CAM		(0.0f)			// カメラの初期位置(X座標)
 #define	POS_Y_CAM		(200.0f)		// カメラの初期位置(Y座標)
 #define	POS_Z_CAM		(-800.0f)		// カメラの初期位置(Z座標)
+
+#define	POS_X_ROTATEWORLD_CAM		(0.0f)			// カメラの視点位置(X座標)
+#define	POS_Y_ROTATEWORLD_CAM		(1400.0f)		// カメラの視点位置(Y座標)
+#define	POS_Z_ROTATEWORLD_CAM		(-2000.0f)		// カメラの視点位置(Z座標)
+#define CAMERA_ROUTE_SEGMENT		(10)
 
 #define	VIEW_ANGLE		(D3DXToRadian(45.0f))							// ビュー平面の視野角
 #define	VIEW_ASPECT		((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT)	// ビュー平面のアスペクト比	
@@ -65,6 +71,16 @@ static float screenWHelf = SCREEN_WIDTH * 0.5f;
 static float screenHHelf = SCREEN_HEIGHT * 0.5f;
 
 static bool  skipMouseDetect = true;
+
+static D3DXVECTOR3 cameraPosRecord;
+static D3DXVECTOR3 cameraRotRecord;
+static bool bezirmoveflag;
+static bool WorldRotateMode;
+static bool goroback;
+static D3DXVECTOR3* route;
+static float		r_time;
+static float		r_speed;
+
 //=============================================================================
 // 初期化処理
 //=============================================================================
@@ -98,6 +114,12 @@ void InitCamera(void)
 	g_Camera.TDN = TDN_cam_move_tbl;
 	g_Camera.move_time = 0.0f;
 	g_Camera.MovieMode = false;
+
+	//world move camera change parameter
+	bezirmoveflag = false;
+	route = new D3DXVECTOR3[CAMERA_ROUTE_SEGMENT + 1];
+	r_time = 0.0f;
+	r_speed = 0.7f;
 }
 
 
@@ -328,14 +350,51 @@ void InputUpdate(void) {
 		}
 
 		//キャラクターの座標に向く TP
-		PLAYER *obj;
-		obj = GetPlayer();
-		g_Camera.at = obj->pos;
+		if (!WorldRotateMode)
+		{
+			PLAYER *obj;
+			obj = GetPlayer();
+			g_Camera.at = obj->pos;
+		}
+		else
+		{
+			g_Camera.at = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		}
+		
 
 		//カメラの座標を更新 TP
 		g_Camera.pos.x = g_Camera.at.x - sinf(g_Camera.rot.y) * (g_Camera.len *  cosf(g_Camera.rot.x));
 		g_Camera.pos.z = g_Camera.at.z - cosf(g_Camera.rot.y) * (g_Camera.len *  cosf(g_Camera.rot.x));
 		g_Camera.pos.y = g_Camera.at.y - sinf(g_Camera.rot.x) * g_Camera.len;
+	}
+
+	if (bezirmoveflag) {
+
+		// エネミー０番だけテーブルに従って座標移動（線形補間）
+		int nowNo = r_time;		// 整数分であるテーブル番号を取り出している
+		int maxNo = CAMERA_ROUTE_SEGMENT + 1;			// 登録テーブル数を数えている
+		int nextNo = (nowNo + 1) % maxNo;			// 移動先テーブルの番号を求めている
+		D3DXVECTOR3	pos = route[nextNo] - route[nowNo];// XYZ移動量を計算している
+		float nowTime = r_time - nowNo;	// 時間部分である少数を取り出している
+		pos *= nowTime;								// 現在の移動量を計算している
+		r_time += r_speed;	// 時間を進めている
+		// 計算して求めた移動量を現在の移動テーブルXYZに足している＝表示座標を求めている
+		g_Camera.pos = route[nowNo] + pos;
+
+		if ((int)r_time >= CAMERA_ROUTE_SEGMENT)		// 登録テーブル最後まで移動したか？
+		{
+			r_time = CAMERA_ROUTE_SEGMENT;
+			if (goroback)
+			{
+				WorldRotateMode = true;
+				ShowCursor(true);
+			}
+			else
+			{
+				bezirmoveflag = false;
+				ShowCursor(false);
+			}
+		}
 	}
 
 	// カメラを初期に戻す
@@ -393,7 +452,7 @@ void MovieModeUpdate()
 	if (size != 1) {
 		// 座標を求める	X = StartX + (EndX - StartX) * 今の時間
 		D3DXVECTOR3 vec = g_Camera.tbl_adr[index + 1].pos - g_Camera.tbl_adr[index].pos;
-		D3DXVECTOR3 deltaAt = g_Camera.tbl_adr[index + 1].at - g_Camera.tbl_adr[index].at;;
+		D3DXVECTOR3 deltaAt = g_Camera.tbl_adr[index + 1].at - g_Camera.tbl_adr[index].at;
 
 		MOIVE_LOOKAT_TYPE type = g_Camera.tbl_adr[index].type;
 
@@ -437,4 +496,118 @@ void MovieModeUpdate()
 		
 	}
 
+}
+
+void SetCameraWorldRotateView(bool b_goback) {
+	r_time = 0.0f;
+	bezirmoveflag == true;
+	goroback = b_goback;
+
+	if (b_goback)//player view -> world rotate view
+	{
+		g_Camera.at = D3DXVECTOR3(0, 0, 0);
+		bezirmoveflag = true;
+		cameraPosRecord = GetCamera()->pos;
+		cameraRotRecord = GetCamera()->rot;
+		D3DXVECTOR3 ep = D3DXVECTOR3(POS_X_ROTATEWORLD_CAM, POS_Y_ROTATEWORLD_CAM, POS_Z_ROTATEWORLD_CAM);
+		D3DXVECTOR3 cp1 = D3DXVECTOR3(  
+			(POS_X_ROTATEWORLD_CAM - cameraPosRecord.x) / 3 + cameraPosRecord.x,
+			(POS_Y_ROTATEWORLD_CAM - cameraPosRecord.y) / 3 + cameraPosRecord.y, 
+			(POS_Z_ROTATEWORLD_CAM - cameraPosRecord.z) / 3 + cameraPosRecord.z);
+		D3DXVECTOR3 cp2 = D3DXVECTOR3(
+			(POS_X_ROTATEWORLD_CAM - cameraPosRecord.x) * 2 / 3 + cameraPosRecord.x,
+			(POS_Y_ROTATEWORLD_CAM - cameraPosRecord.y) * 2 / 3 + cameraPosRecord.y,
+			(POS_Z_ROTATEWORLD_CAM - cameraPosRecord.z) * 2 / 3 + cameraPosRecord.z);
+		
+
+		ZeroMemory(&route, sizeof(route));
+		route = new D3DXVECTOR3[CAMERA_ROUTE_SEGMENT + 1];
+		route = GetThreePowerBeizerList(cameraPosRecord, cp1, cp2, ep, CAMERA_ROUTE_SEGMENT);
+		route[CAMERA_ROUTE_SEGMENT] = ep;
+
+	}
+	else
+	{
+		g_Camera.at = GetPlayer()->pos;
+		WorldRotateMode = false;
+		
+		HWND name;
+		name = GetForegroundWindow();
+		ShowCursor(false);
+		AdjustDeltaRot();
+
+		auto st = D3DXVECTOR3(POS_X_ROTATEWORLD_CAM, POS_Y_ROTATEWORLD_CAM, POS_Z_ROTATEWORLD_CAM);
+		D3DXVECTOR3 ep = cameraPosRecord;
+		D3DXVECTOR3 cp1 = D3DXVECTOR3(
+			(ep.x - st.x) / 3 + st.x,
+			(ep.y - st.y) / 3 + st.y,
+			(ep.z - st.z) / 3 + st.z);
+		D3DXVECTOR3 cp2 = D3DXVECTOR3(
+			(ep.x - st.x) * 2 / 3 + st.x,
+			(ep.y - st.y) * 2 / 3 + st.y,
+			(ep.z - st.z) * 2 / 3 + st.z);
+		
+		ZeroMemory(&route, sizeof(route));
+		route = new D3DXVECTOR3[CAMERA_ROUTE_SEGMENT + 1];
+		route = GetThreePowerBeizerList(st, cp1, cp2, ep, CAMERA_ROUTE_SEGMENT);
+		route[CAMERA_ROUTE_SEGMENT] = ep;
+	}
+	
+}
+
+// <summary>
+// 四つの点を組み合わせ、ベジエ曲線を作る
+// </summary>
+// <param name="startPoint"></param>　開始点
+// <param name="controlPoint1"></param>　中間点１
+// <param name="controlPoint2"></param>　中間点２
+// <param name="endPoint"></param>　結末点
+// <param name="segmentNum"></param>　何段線がありますか
+// <returns></returns>
+// 
+D3DXVECTOR3* GetThreePowerBeizerList(D3DXVECTOR3 startPoint, D3DXVECTOR3 controlPoint1, D3DXVECTOR3 controlPoint2, D3DXVECTOR3 endPoint, int segmentNum)
+{
+	D3DXVECTOR3* path = new D3DXVECTOR3[segmentNum + 1];
+
+	for (int i = 0; i < segmentNum; i++)
+	{
+		float t = i / (float)segmentNum;
+		D3DXVECTOR3 pixel = CalculateThreePowerBezierPoint(t, startPoint,
+			controlPoint1, controlPoint2, endPoint);
+		path[i] = pixel;
+	}
+	return path;
+}
+
+// <summary>
+// 割れている点を一つずつ計算
+// </summary>
+// <param name="t"></param>　どんな程度を進んでいる
+// <param name="p0"></param> 開始点
+// <param name="p1"></param> 中間点１
+// <param name="p2"></param> 中間点２
+// <param name="p3"></param> 結末点
+// <returns></returns>
+D3DXVECTOR3 CalculateThreePowerBezierPoint(float t, D3DXVECTOR3 p0, D3DXVECTOR3 p1, D3DXVECTOR3 p2, D3DXVECTOR3 p3)
+{
+	float u = 1 - t;
+	float tt = t * t;
+	float uu = u * u;
+	float ttt = tt * t;
+	float uuu = uu * u;
+
+	D3DXVECTOR3 p = uuu * p0;
+	p += 3 * t * uu * p1;
+	p += 3 * tt * u * p2;
+	p += ttt * p3;
+
+	return p;
+}
+
+bool GetWorldRotateMode() {
+	return WorldRotateMode;
+}
+
+void SetWorldRotateMode(bool wrm) {
+	WorldRotateMode = wrm;
 }
