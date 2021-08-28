@@ -8,7 +8,6 @@
 
 #include "main.h"
 #include "model.h"
-
 enum enumEnemyType
 {
 	EnemyType_mushroom,
@@ -86,10 +85,14 @@ struct ENEMY
 	D3DXVECTOR3         Moving_Plat_Speed;
 	D3DXVECTOR3         ChaceArea;          // 追尾範囲
 	D3DXVECTOR3         OriginPos;          // 元の位置
+	
 	D3DXVECTOR3         movingOriginPos;    // 動ける元の位置
 
 	DX11_MODEL			model;				// モデル情報
 
+
+	D3DXVECTOR3			Reborn_pos;
+	clock_t				move_time;
 };
 
 enum ENUMEnemyStatus {
@@ -113,7 +116,7 @@ void DrawEnemy(void);
 ENEMY *GetEnemy(void);
 
 int SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-	         D3DXVECTOR3 scl = D3DXVECTOR3(0.0f,0.0f,0.0f), int enemyType = 0);
+	         D3DXVECTOR3 scl = D3DXVECTOR3(0.0f,0.0f,0.0f), int enemyType = 0, D3DXVECTOR3 reborn_pos);
 int SetEnemyToID(int num, DX11_MODEL model, D3DXVECTOR3 pos, D3DXVECTOR3 rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 	D3DXVECTOR3 scl = D3DXVECTOR3(0.0f, 0.0f, 0.0f), int EnemyType = 0);
 

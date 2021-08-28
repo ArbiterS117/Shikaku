@@ -105,3 +105,5 @@ void DrawPlayer(void);
 
 PLAYER *GetPlayer(void);
 
+void setPlayerPosition(D3DXVECTOR3 pos);
+

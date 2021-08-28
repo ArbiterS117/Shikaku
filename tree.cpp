@@ -140,8 +140,8 @@ void UpdateTree(void)
 		{
 			// 影の位置設定
 			SetPositionShadow(g_aTree[i].nIdxShadow, D3DXVECTOR3(g_aTree[i].pos.x, 0.1f, g_aTree[i].pos.z));
-		
-			g_aTree[i].material.Diffuse = D3DXCOLOR(1.0f,1.0f,1.0f, (float)g_nAlpha/255.0f);
+
+			g_aTree[i].material.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, (float)g_nAlpha / 255.0f);
 		}
 	}
 

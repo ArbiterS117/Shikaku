@@ -9,6 +9,7 @@
 
 enum enumGroundType
 {
+	GroundType_Test,
 	GroundType_HeartWorld,
 	GroundType_HeartWorld_D,
 	GroundType_HtoW,
@@ -37,3 +38,6 @@ void DrawGround(void);
 
 DX11_MODEL getGroundModel(int id);
 D3DXVECTOR3 *getGroundNormal(int id);
+
+float returnWorldRot(int i);
+D3DXVECTOR3 GetGroungModelSCL();

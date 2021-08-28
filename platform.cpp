@@ -19,9 +19,9 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	MODEL_PLATFORM_NORMAL	    "data/MODEL/Block2x2.obj"	// 読み込むモデル名
+#define	MODEL_PLATFORM_NORMAL	    "data/MODEL/map.obj"	// 読み込むモデル名
 #define	MODEL_PLATFORM_ICE          "data/MODEL/icePlat.obj"   
-#define	MODEL_PLATFORM_T1           "data/MODEL/tree1.obj"     
+#define	MODEL_PLATFORM_T1           "data/MODEL/Test.obj"     
 #define	MODEL_PLATFORM_T2           "data/MODEL/tree2.obj"     
 #define	MODEL_PLATFORM_T3           "data/MODEL/tree3.obj"     
 #define	MODEL_PLATFORM_BLOCK        "data/MODEL/stoneBlock.obj"     
@@ -149,15 +149,21 @@ HRESULT InitPlatform(void)
 
 	//============線形移動 tmep
 	g_MoveSpdX[0] = 0.0032f;
+	//g_MoveSpdX[0] = 0.1f;
 	g_MoveSpdX[1] = 0.005f;
+	//g_MoveSpdX[1] = 0.1f;
 	g_MoveTblX[0] = D3DXVECTOR3(-1000.0f,  0.0f,  0.0f);
 	g_MoveTblX[1] = D3DXVECTOR3( 1000.0f, 0.0f, 0.0f);
 	g_MoveSpdY[0] = 0.0032f;
+	//g_MoveSpdY[0] = 0.1f;
 	g_MoveSpdY[1] = 0.005f;
+	//g_MoveSpdY[1] = 0.1f;
 	g_MoveTblY[0] = D3DXVECTOR3(0.0f, -1000.0f, 0.0f);
 	g_MoveTblY[1] = D3DXVECTOR3(0.0f,  1000.0f, 0.0f);
 	g_MoveSpdZ[0] = 0.0032f;
+	//g_MoveSpdZ[0] = 0.1f;
 	g_MoveSpdZ[1] = 0.005f;
+	//g_MoveSpdZ[1] = 0.1f;
 	g_MoveTblZ[0] = D3DXVECTOR3(0.0f, 0.0f, -1000.0f);
 	g_MoveTblZ[1] = D3DXVECTOR3(0.0f, 0.0f,  1000.0f);
 

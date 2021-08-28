@@ -71,7 +71,7 @@
 #define PLAYER_MUSH_JUMP_SPEED          (60.0f)
 #define	VALUE_SNADGRAVITY               (0.5f)		            
 #define	VALUE_SNADJUMP_GRAVITY          (7.5f)		            
-#define	VALUE_BOB_GRAVITY               (0.15f)		            
+#define	VALUE_BOB_GRAVITY               (0.01f)		            
 
 #define PLAYER_MAX_MOVE_SPEED_ICE       (25.0f)
 #define	VALUE_ICE_MOVE			        (0.2f)
@@ -83,7 +83,7 @@
 #define PLAYER_THROWING_TIME       (15)                      // カード投げる時間
 #define PLAYER_USEABILITYCD        (60)                      // カード能力を使うCD時間
 #define PLAYER_WATERABILITYCD      (10)                       // カード能力アピールCD時間
-#define PLAYER_BOBSTATETIME        (420)                     // 泡能力時間
+#define PLAYER_BOBSTATETIME        (4200)                     // 泡能力時間
 #define PLAYER_SANDSTATETIME       (1000)                    // 砂状態時間
 #define PLAYER_MOVESMOKECDTIME     (6)                       // 歩いての煙
 
@@ -98,6 +98,7 @@ static void AnimStatusUpdate(PLAYER &player);
 
 static void ChangeForceY(float force);
 static void MovingPlatPhysicsUpdate(PLAYER &player, int InRangeOBJNum, int *OBJInRangeList);
+
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
@@ -107,8 +108,10 @@ static float                backToMAXMoveSpeed = 0.2f;
 
 bool getFinalStar = false;
 
+D3DXVECTOR3 temp_player_leave_plat_speed;
+
 D3DXVECTOR3 playerRebornPos[12] = {
-	{350.0f, 550.0f, 0.0f},
+	{-200.0f, 550.0f, 0.0f},
 	{150.0f, 1550.0f, 7500.0f},
 	{122.0, 1000.0f, 14420.0f},
 	{1365.0f, 1050.0f, 24530.0f},
@@ -616,14 +619,16 @@ void PhysicsUpdate(PLAYER & player) {
 	//==============groundTest Raycast
 	D3DXVECTOR3 hit, normal;
 	bool rayHit = false;
-	if(player.InHeartWorldArea) rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_HeartWorld);
-	if(player.InHtoWArea)       rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_HtoW);
-	if(player.InWonderLandArea) rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_Wonderland);
-	if(player.InWonderLand2Area)rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_Wonderland2);
-	if(player.InWtoSArea)       rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_WtoS);
-	if(player.InSandWorldArea)  rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_SandWorld);
-	if(player.InStoSArea)       rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_StoS);
-	if(player.InSnowWorldArea)  rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_SnowWorld);
+	rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_Test);
+	//if(player.InHeartWorldArea) rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_HeartWorld);
+	//if(player.InHtoWArea)       rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_HtoW);
+	//if(player.InWonderLandArea) rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_Wonderland);
+	//if(player.InWonderLand2Area)rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_Wonderland2);
+	//if(player.InWtoSArea)       rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_WtoS);
+	//if(player.InSandWorldArea)  rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_SandWorld);
+	//if(player.InStoSArea)       rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_StoS);
+	//if(player.InSnowWorldArea)  rayHit += RayHitGround(player.pos, &hit, &normal, GroundType_SnowWorld);
+	
 	if (rayHit) {
 		if (player.speed.y <= 0.0f) {
 			bool slopeANS = false;
@@ -697,7 +702,7 @@ void PhysicsUpdate(PLAYER & player) {
 	for (int i = 0; i < OBJNum; i++) {
 		int targetCID = OBJInRange[i];
 		if (CheckHitByID(player.CircleRangeColliderIdx, targetCID)) {
-			if (!plat[Collider[targetCID].masterID].canMove) {
+			//if (!plat[Collider[targetCID].masterID].canMove) {////////////////////////////////////46516516516516516
 				if (player.speed.y <= 0.0f) {
 					if (RayHitPlat(player.pos, targetCID, &hit, &normal)) {
 						bool slopeANS = false;
@@ -763,7 +768,7 @@ void PhysicsUpdate(PLAYER & player) {
 						}
 					}
 				}
-			}
+			//}
 			if (player.speed.y > 0.0f) { // 天井
 				D3DXVECTOR3 cellingY = player.pos;
 				cellingY.y += PLAYER_GROUNDCHECKC_Y;
@@ -801,14 +806,15 @@ void PhysicsUpdate(PLAYER & player) {
 	if (player.speed.x == 0.0f && player.speed.z == 0.0f) dirXZ =  player.dirXZ;
 	else  dirXZ = player.speed;
 	rayHit = false;
-	if(player.InHeartWorldArea) rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_HeartWorld);
-	if(player.InHtoWArea)       rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_HtoW);
-	if(player.InWonderLandArea) rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_Wonderland);
-	if(player.InWonderLand2Area)rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_Wonderland2);
-	if(player.InWtoSArea)       rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_WtoS);
-	if(player.InSandWorldArea)  rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_SandWorld);
-	if(player.InStoSArea)       rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_StoS);
-	if(player.InSnowWorldArea)  rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_SnowWorld);
+	rayHit += RayHitGroundWall(player.pos, dirXZ, &hit, &normal, GroundType_Test);
+	//if(player.InHeartWorldArea) rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_HeartWorld);
+	//if(player.InHtoWArea)       rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_HtoW);
+	//if(player.InWonderLandArea) rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_Wonderland);
+	//if(player.InWonderLand2Area)rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_Wonderland2);
+	//if(player.InWtoSArea)       rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_WtoS);
+	//if(player.InSandWorldArea)  rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_SandWorld);
+	//if(player.InStoSArea)       rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_StoS);
+	//if(player.InSnowWorldArea)  rayHit += RayHitGroundWall(player.pos , dirXZ, &hit, &normal, GroundType_SnowWorld);
 
 	if (rayHit) {
 		if (fabsf(normal.y) <= WALL_SLOPE_DEGREE) {
@@ -979,25 +985,6 @@ void CollisionUpdate(PLAYER & player)
 			player.canUseCardTrigger = true;
 		}
 	}
-	//持續偵測 ===> 會卡
-	//int sandCnt = 0;
-	//for (int i = 0; i < MAX_COLLIDER3D; i++) {
-	//	if(collider[i].tag == collider3DTag_enemy)
-	//	if (CheckHitByIDAABB(player.bodyColliderIdx,i)) {
-	//		//sand
-	//		if (Enemy[collider[i].masterID].enemyType == EnemyType_sandArea) {
-	//			g_Player.isInSand = true;
-	//			sandCnt = 1;
-	//			PrintDebugProc("Enemy[collider[i].masterID] %d\n", Enemy[collider[i].masterID]);
-	//
-	//		}
-	//		//
-	//
-	//	}
-	//}
-	////判定
-	//if (sandCnt == 0)g_Player.isInSand = false;
-	//PrintDebugProc("g_Player.isInSand: %d\n", g_Player.isInSand);
 
 	//===card
 	BULLET *Bullet = GetBullet();
@@ -1059,20 +1046,20 @@ void CollisionUpdate(PLAYER & player)
 	//===ground Check Area
 	if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_HeartWorld)) g_Player.InHeartWorldArea = true;
 	else g_Player.InHeartWorldArea = false;
-	if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_HtoW)) g_Player.InHtoWArea = true;
-	else g_Player.InHtoWArea = false;
-	if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_WonderLand)) g_Player.InWonderLandArea = true;
-	else g_Player.InWonderLandArea = false;
-	if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_WonderLand2)) g_Player.InWonderLand2Area = true;
-	else g_Player.InWonderLand2Area = false;
-	if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_WtoS)) g_Player.InWtoSArea = true;
-	else g_Player.InWtoSArea = false;
-	if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_SandWorld)) g_Player.InSandWorldArea = true;
-	else g_Player.InSandWorldArea = false;
-	if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_StoS)) g_Player.InStoSArea = true;
-	else g_Player.InStoSArea = false;
-	if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_SnowWorld)) g_Player.InSnowWorldArea = true;
-	else g_Player.InSnowWorldArea = false;
+	//if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_HtoW)) g_Player.InHtoWArea = true;
+	//else g_Player.InHtoWArea = false;
+	//if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_WonderLand)) g_Player.InWonderLandArea = true;
+	//else g_Player.InWonderLandArea = false;
+	//if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_WonderLand2)) g_Player.InWonderLand2Area = true;
+	//else g_Player.InWonderLand2Area = false;
+	//if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_WtoS)) g_Player.InWtoSArea = true;
+	//else g_Player.InWtoSArea = false;
+	//if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_SandWorld)) g_Player.InSandWorldArea = true;
+	//else g_Player.InSandWorldArea = false;
+	//if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_StoS)) g_Player.InStoSArea = true;
+	//else g_Player.InStoSArea = false;
+	//if (CheckHitByTag(player.bodyColliderIdx, collider3DTag_GroundArea_SnowWorld)) g_Player.InSnowWorldArea = true;
+	//else g_Player.InSnowWorldArea = false;
 
 	
 	
@@ -1330,9 +1317,7 @@ void AnimStatusUpdate(PLAYER & player)
 void ChangeForceY(float force)
 {
 	g_Player.speed.y = force;
-	if(g_Player.Moving_Plat_Speed.y > 0) {
-		//g_Player.speed.y += g_Player.Moving_Plat_Speed.y;
-	}
+	
 	g_Player.On_Moving_Plat = false;
 	g_Player.Anim_isJumping = true;
 }
@@ -1345,17 +1330,19 @@ void MovingPlatPhysicsUpdate(PLAYER &player, int OBJNum, int *OBJInRange)
 	SetPositionCollider3D(player.bodyColliderIdx, player.pos, player.rot);
 	SetPositionCollider3D(player.groundCheckColliderIdx, D3DXVECTOR3(player.pos.x, player.pos.y - PLAYER_GROUNDCHECKC_Y - PLAYER_BODYCHECKC_XZ * 0.5f, player.pos.z));
 	SetPositionCollider3D(player.CircleRangeColliderIdx, player.pos);
-	int ansCnt = 0;
-	for (int i = 0; i < OBJNum; i++) {
+	int ansCnt = 0; // how many collision detected
+	for (int i = 0; i < OBJNum; i++) { // iterate every posible collision
 		int targetCID = plat[Collider[OBJInRange[i]].masterID].colliderIdx;
-		if (CheckHitByID(player.groundCheckColliderIdx, targetCID)) {
+		int platID = Collider[targetCID].masterID;
+		if (CheckHitByID(player.groundCheckColliderIdx, targetCID)) { // collision detection
 			if (player.speed.y <= 0.0f && player.pos.y + Collider[player.bodyColliderIdx].hy*0.5f >= (Collider[targetCID].pos.y + Collider[targetCID].hy*0.5f)) { // player's head higher than target's head
-				if (Collider[targetCID].rot.x == 0.0f && plat[Collider[targetCID].masterID].canMove) {
+				if (plat[platID].canMove) {
 					player.pos.y = PLAYER_GROUND_OFFSET_Y + Collider[targetCID].pos.y + Collider[targetCID].hy * 0.5f;
 					ansCnt++;
 					//====== NOT On moving platform
 					if (player.On_Moving_Plat == false) {
-						if (plat[Collider[targetCID].masterID].canMove) {
+						if (plat[platID].canMove) {
+							player.Moving_Plat_PrePos = Collider[targetCID].pos; // put the first Moving_Plat_PrePos in
 							player.On_Moving_Plat_Pos.x = player.pos.x - Collider[targetCID].pos.x;
 							player.On_Moving_Plat_Pos.z = player.pos.z - Collider[targetCID].pos.z;
 							player.On_Moving_Plat = true;
@@ -1371,7 +1358,7 @@ void MovingPlatPhysicsUpdate(PLAYER &player, int OBJNum, int *OBJInRange)
 						player.Moving_Plat_Speed = Collider[targetCID].pos - player.Moving_Plat_PrePos;
 					}
 					//===================================
-					if (plat[Collider[targetCID].masterID].canMove) {
+					if (plat[platID].canMove) {
 						player.Moving_Plat_PrePos = Collider[targetCID].pos;
 						player.pos.x = Collider[targetCID].pos.x + player.On_Moving_Plat_Pos.x;
 						player.pos.z = Collider[targetCID].pos.z + player.On_Moving_Plat_Pos.z;
@@ -1379,7 +1366,7 @@ void MovingPlatPhysicsUpdate(PLAYER &player, int OBJNum, int *OBJInRange)
 						player.On_Moving_Plat_Pos.z += player.speed.z;
 					}
 					//===================================ICE
-					if (plat[Collider[targetCID].masterID].platformType == PlatformType_ice) {
+					if (plat[platID].platformType == PlatformType_ice) {
 						player.isInIceStatus = true;
 					}
 					else {
@@ -1398,72 +1385,21 @@ void MovingPlatPhysicsUpdate(PLAYER &player, int OBJNum, int *OBJInRange)
 		player.speed.x += player.Moving_Plat_Speed.x;
 		player.speed.y += player.Moving_Plat_Speed.y;
 		player.speed.z += player.Moving_Plat_Speed.z;
+
+		temp_player_leave_plat_speed = player.Moving_Plat_Speed;
+
 		player.maxMoveSpeed += D3DXVec3Length(&player.Moving_Plat_Speed); // 暫時放大最高速度 => 在平台上跳躍使speed.xz正常變動
-		if (player.maxMoveSpeed >= 100.0f) player.maxMoveSpeed = PLAYER_MAX_MOVE_SPEED; // prevent extream speed
 		g_Player.backToMAXMove = false;
 		player.Moving_Plat_PrePos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		if (player.Moving_Plat_Speed.x != 0.0f || player.Moving_Plat_Speed.z != 0.0f)player.Exit_Moving_Plat = true;
 	}
 
+	PrintDebugProc("\n\temp_player_leave_plat_speed_X : %f\n\n", temp_player_leave_plat_speed.x);
+	PrintDebugProc("\n\temp_player_leave_plat_speed_Y : %f\n\n", temp_player_leave_plat_speed.y);
+	PrintDebugProc("\n\temp_player_leave_plat_speed_Z : %f\n\n", temp_player_leave_plat_speed.z);
 
-	//=========Moving Wall Detect \\ checkBB only
-	//bool onStair = false;
-	//for (int i = 0; i < OBJNum; i++) {
-	//	int targetCID = plat[Collider[OBJInRange[i]].masterID].colliderIdx;
-	//	if (CheckHitByID(player.groundCheckColliderIdx, targetCID)) {
-	//		COLLIDER3D targetC = Collider[targetCID];
-	//		if (plat[targetC.masterID].canMove) {
-	//			COLLIDER3D playerC = Collider[player.bodyColliderIdx];
-	//			D3DXVECTOR3 speedDir;
-	//			D3DXVECTOR3 speedXZ = D3DXVECTOR3(player.speed.x, 0.0f, player.speed.z);
-	//			D3DXVec3Normalize(&speedDir, &speedXZ);
+}
 
-	//			if (targetC.rot.x == 0.0f && targetC.rot.y == 0.0f) { // no slope & no rot
-	//				if ((player.pos.y - playerC.hy*0.4f < targetC.pos.y + targetC.hy*0.5f) && (player.pos.y + playerC.hy*0.4f > targetC.pos.y - targetC.hy*0.5f)) {//高さ=>地面になった 0.5 => 0.4 : prevent from wall detect
-
-	//					//like stair
-	//					if ((player.pos.y - (targetC.pos.y + targetC.hy*0.5f)) >= CAN_STAIR_HEIGHT) {
-	//						player.pos.y += 2.5f;
-	//						player.pos.x += player.dirXZ.x * 0.5f;
-	//						player.pos.z += player.dirXZ.z * 0.5f;
-	//						onStair = true;
-	//					}
-	//					if (!onStair) { // 移動
-	//						if (playerC.pos.z + playerC.lz*0.5f > targetC.pos.z + targetC.lz*0.5f &&
-	//							(playerC.pos.x - playerC.wx*0.5f < (targetC.pos.x + targetC.wx*0.5f) && (playerC.pos.x + playerC.wx*0.5f > (targetC.pos.x - targetC.wx*0.5f)))) {
-	//							if (speedDir.z < 0)player.speed.z = 0.0f;
-	//							player.pos.z = Collider[targetCID].pos.z + Collider[targetCID].lz*0.5f + Collider[player.bodyColliderIdx].lz*0.5f;
-	//						}
-	//						else if (playerC.pos.x + playerC.wx*0.5f > targetC.pos.x + targetC.wx*0.5f &&
-	//							(playerC.pos.z - playerC.lz*0.5f < (targetC.pos.z + targetC.lz*0.5f) && (playerC.pos.z + playerC.lz*0.5f > (targetC.pos.z - targetC.lz*0.5f)))) {
-	//							if (speedDir.x < 0)player.speed.x = 0.0f;
-	//							player.pos.x = Collider[targetCID].pos.x + Collider[targetCID].wx*0.5f + Collider[player.bodyColliderIdx].wx*0.5f;
-	//						}
-	//						else if (playerC.pos.z - playerC.lz*0.5f < targetC.pos.z - targetC.lz*0.5f &&
-	//							(playerC.pos.x - playerC.wx*0.5f < (targetC.pos.x + targetC.wx*0.5f) && (playerC.pos.x + playerC.wx*0.5f > (targetC.pos.x - targetC.wx*0.5f)))) {
-	//							if (speedDir.z > 0)player.speed.z = 0.0f;
-	//							player.pos.z = Collider[targetCID].pos.z - Collider[targetCID].lz*0.5f - Collider[player.bodyColliderIdx].lz*0.5f;
-	//						}
-	//						else if (playerC.pos.x - playerC.wx*0.5f < targetC.pos.x - targetC.wx*0.5f &&
-	//							(playerC.pos.z - playerC.lz*0.5f < (targetC.pos.z + targetC.lz*0.5f) && (playerC.pos.z + playerC.lz*0.5f > (targetC.pos.z - targetC.lz*0.5f)))) {
-	//							if (speedDir.x > 0)player.speed.x = 0.0f;
-	//							player.pos.x = Collider[targetCID].pos.x - Collider[targetCID].wx*0.5f - Collider[player.bodyColliderIdx].wx*0.5f;
-	//						}
-	//					}
-	//					if (player.On_Moving_Plat) {
-	//						player.On_Moving_Plat_Pos.x = player.pos.x - Collider[player.On_Moving_PlatID].pos.x;
-	//						player.On_Moving_Plat_Pos.z = player.pos.z - Collider[player.On_Moving_PlatID].pos.z;
-	//					}
-
-	//					//ダッシュとき壁にぶつかる => とめられ
-	//					if (player.isDash || player.isFloat) {
-	//						player.speed.y = 0.0f;
-	//						player.isDash = false;
-	//						player.isFloat = false;
-	//					}
-	//				}
-	//			}
-	//		}
-	//	}
-	//}
+void setPlayerPosition(D3DXVECTOR3 pos) {
+	g_Player.pos = pos;
 }

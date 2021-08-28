@@ -43,6 +43,7 @@ bool CheckHitOBBReturnLen(int col1ID, int col2ID, D3DXVECTOR3 *Len);
 float CheckHitOBBToPoint(int col1ID, int col2ID, D3DXVECTOR3 *vec);
 																																												   //as switch 
 bool RayCast(D3DXVECTOR3 p0, D3DXVECTOR3 p1, D3DXVECTOR3 p2, D3DXVECTOR3 pos0, D3DXVECTOR3 pos1, D3DXVECTOR3 *hit, D3DXVECTOR3 *normal, D3DXVECTOR3 caculatedNormal = D3DXVECTOR3(-100.0f,0.0f,0.0f));
+
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
@@ -1451,12 +1452,16 @@ bool RayHitGround(D3DXVECTOR3 pos, D3DXVECTOR3 * HitPosition, D3DXVECTOR3 * Norm
 	// ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&mtxWorld);
 	// スケールを反映
-	D3DXMatrixScaling(&mtxScl, 20.0f, 20.0f, -20.0f);
+	D3DXVECTOR3 groundSCL = GetGroungModelSCL();
+	D3DXMatrixScaling(&mtxScl, groundSCL.x, groundSCL.y, groundSCL.z);
 	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxScl);
 
 	// 回転を反映
-	//D3DXMatrixRotationYawPitchRoll(&mtxRot, 0.0f, 0.0f, 0.0f);
-	//D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
+	float worldRotX = returnWorldRot(1);
+	float worldRotY = returnWorldRot(2);
+	float worldRotZ = returnWorldRot(3);
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, worldRotX, worldRotY, worldRotZ);
+	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
 
 	// 移動を反映
 	//D3DXMatrixTranslation(&mtxTranslate, 0.0f, 0.0f, 0.0f);
@@ -1479,7 +1484,9 @@ bool RayHitGround(D3DXVECTOR3 pos, D3DXVECTOR3 * HitPosition, D3DXVECTOR3 * Norm
 		D3DXVec3TransformCoord(&p1, &p1, &mtxWorld);
 		D3DXVec3TransformCoord(&p2, &p2, &mtxWorld);
 		
-		bool ans = RayCast(p0, p1, p2, start, end, &HitPositionTemp, &NormalTemp,caculatedNormal[i]);
+		//bool ans = RayCast(p0, p1, p2, start, end, &HitPositionTemp, &NormalTemp,caculatedNormal[i]);
+		bool ans = RayCast(p0, p2, p1, start, end, &HitPositionTemp, &NormalTemp);
+
 		if (ans) {
 			// Find nearest
 			float dis = D3DXVec3LengthSq(&(HitPositionTemp - pos));
@@ -1496,7 +1503,6 @@ bool RayHitGround(D3DXVECTOR3 pos, D3DXVECTOR3 * HitPosition, D3DXVECTOR3 * Norm
 				*HitPosition = HitPositionTemp;
 				*Normal = NormalTemp;
 			}
-			return true;
 		}
 	}
 
@@ -1530,12 +1536,16 @@ bool RayHitGroundWall(D3DXVECTOR3 pos, D3DXVECTOR3 forwardXY, D3DXVECTOR3 * HitP
 	// ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&mtxWorld);
 	// スケールを反映
-	D3DXMatrixScaling(&mtxScl, 20.0f, 20.0f, -20.0f);
+	D3DXVECTOR3 groundSCL = GetGroungModelSCL();
+	D3DXMatrixScaling(&mtxScl, groundSCL.x, groundSCL.y, groundSCL.z);
 	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxScl);
 
 	// 回転を反映
-	//D3DXMatrixRotationYawPitchRoll(&mtxRot, 0.0f, 0.0f, 0.0f);
-	//D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
+	float worldRotX = returnWorldRot(1);
+	float worldRotY = returnWorldRot(2);
+	float worldRotZ = returnWorldRot(3);
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, worldRotX, worldRotY, worldRotZ);
+	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
 
 	// 移動を反映
 	//D3DXMatrixTranslation(&mtxTranslate, 0.0f, 0.0f, 0.0f);
@@ -1558,7 +1568,9 @@ bool RayHitGroundWall(D3DXVECTOR3 pos, D3DXVECTOR3 forwardXY, D3DXVECTOR3 * HitP
 		D3DXVec3TransformCoord(&p1, &p1, &mtxWorld);
 		D3DXVec3TransformCoord(&p2, &p2, &mtxWorld);
 
-		bool ans = RayCast(p0, p1, p2, start, end, &HitPositionTemp, &NormalTemp, caculatedNormal[i]);
+		//bool ans = RayCast(p0, p1, p2, start, end, &HitPositionTemp, &NormalTemp, caculatedNormal[i]);
+		bool ans = RayCast(p0, p2, p1, start, end, &HitPositionTemp, &NormalTemp);
+
 		if (ans) {
 			// Find nearest
 			float dis = D3DXVec3LengthSq(&(HitPositionTemp - pos));
@@ -1667,6 +1679,81 @@ bool RayCast(D3DXVECTOR3 p0, D3DXVECTOR3 p1, D3DXVECTOR3 p2, D3DXVECTOR3 pos0, D
 
 
 	return(true);	// 当たっている！(hitには当たっている交点が入っている。normalには法線が入っている)
+}
+
+
+bool RayHitEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 * HitPosition, D3DXVECTOR3 * Normal, int id, D3DXVECTOR3  Rayway)
+{
+	D3DXVECTOR3 start = pos;
+	D3DXVECTOR3 end = pos;
+	D3DXVECTOR3 HitPositionTemp;
+	D3DXVECTOR3 NormalTemp;
+
+	D3DXVECTOR3 *caculatedNormal = NULL;
+	caculatedNormal = getGroundNormal(id);
+	DX11_MODEL model = getGroundModel(id);
+
+	D3DXMATRIX  mtxScl, mtxRot, mtxTranslate, mtxWorld;
+	// ワールドマトリックスの初期化
+	D3DXMatrixIdentity(&mtxWorld);
+	// スケールを反映
+	D3DXVECTOR3 groundSCL = GetGroungModelSCL();
+	D3DXMatrixScaling(&mtxScl, groundSCL.x, groundSCL.y, groundSCL.z);
+	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxScl);
+
+	// 回転を反映
+	float worldRotX = returnWorldRot(1);
+	float worldRotY = returnWorldRot(2);
+	float worldRotZ = returnWorldRot(3);
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, worldRotX, worldRotY, worldRotZ);
+	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
+
+	// 移動を反映
+	//D3DXMatrixTranslation(&mtxTranslate, 0.0f, 0.0f, 0.0f);
+	//D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxTranslate);
+
+	// 少し上から、ズドーンと下へレイを飛ばす
+	start -= 10.0f*Rayway;
+	end += 1000.0f* Rayway;
+	int ansI = -1;
+	float NDis = 0.0f;
+	bool firstFindNDis = false;
+	PrintDebugProc("Ground: IndexNum: %d VertexNum: %d\n", model.IndexNum, model.VertexNum);
+	for (int i = 0; i < model.IndexNum; i += 3) {
+		D3DXVECTOR3 p0, p1, p2;
+		p0 = model.Vertexlist[model.Indexlist[i]];
+		p1 = model.Vertexlist[model.Indexlist[i + 1]];
+		p2 = model.Vertexlist[model.Indexlist[i + 2]];
+
+		D3DXVec3TransformCoord(&p0, &p0, &mtxWorld);
+		D3DXVec3TransformCoord(&p1, &p1, &mtxWorld);
+		D3DXVec3TransformCoord(&p2, &p2, &mtxWorld);
+
+		bool ans = RayCast(p0, p2, p1, start, end, &HitPositionTemp, &NormalTemp);
+
+		if (ans) 
+		{
+			// Find nearest
+			float dis = D3DXVec3LengthSq(&(HitPositionTemp - pos));
+			if (!firstFindNDis) {
+				firstFindNDis = true;
+				NDis = dis;
+				ansI = i;
+				*HitPosition = HitPositionTemp;
+				*Normal = NormalTemp;
+			}
+			if (NDis > dis) {
+				NDis = dis;
+				ansI = i;
+				*HitPosition = HitPositionTemp;
+				*Normal = NormalTemp;
+			}
+			return true;
+		}
+	}
+
+
+	return false;
 }
 //=============================================================================
 // 情報を取得
