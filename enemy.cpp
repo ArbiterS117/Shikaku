@@ -17,6 +17,7 @@
 #include "particle.h"
 #include "sound.h"
 
+#include <time.h>
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
@@ -75,6 +76,8 @@ static void AnimUpdate(ENEMY &enemy);
 //*****************************************************************************
 static ENEMY				g_Enemy[MAX_ENEMY];				// プレイヤー
 
+static PLAYER				*g_Player = GetPlayer();
+
 static DX11_MODEL			g_Model[MAX_MODEL];						// モデル情報
 
 static D3DXVECTOR3 g_MoveTblX[3]; // linear move
@@ -117,6 +120,7 @@ HRESULT InitEnemy(void)
 		g_Enemy[i].scl = D3DXVECTOR3(100.0f, 100.0f, 100.0f);
 		g_Enemy[i].OriginPos = g_Enemy[i].pos;
 
+		g_Enemy[i].Reborn_pos = g_Enemy[i].pos;
 		//physics
 		g_Enemy[i].speed = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_Enemy[i].maxMoveSpeed = VALUE_MAX_MOVE_SPEED;
@@ -132,11 +136,12 @@ HRESULT InitEnemy(void)
 		g_Enemy[i].CanChase = false;   
 		g_Enemy[i].Canfly = false;   
 
-		//線形移動 tmep
-		g_Enemy[i].CanMove = false;
-		g_Enemy[i].canmoveAxis = -1;   // 0: X  1: Y  2: Z  -1 : not active
-		g_Enemy[i].LMtime = 0.0f;//Liner move time
-		g_Enemy[i].Status = EnemyStatus_Idle;
+		g_Enemy[i].move_time = 0.0f;
+		////線形移動 tmep
+		//g_Enemy[i].CanMove = false;
+		//g_Enemy[i].canmoveAxis = -1;   // 0: X  1: Y  2: Z  -1 : not active
+		//g_Enemy[i].LMtime = 0.0f;//Liner move time
+		//g_Enemy[i].Status = EnemyStatus_Idle;
 
 		g_AnimTimer[i] = 0.0f;
 	}
@@ -158,7 +163,7 @@ HRESULT InitEnemy(void)
 	}
 	
 	//線形移動 tmep
-	g_MoveSpdX[0] = 0.01f;
+	/*g_MoveSpdX[0] = 0.01f;
 	g_MoveSpdX[1] = 0.005f;
 	g_MoveSpdX[2] = 0.01f;
 	g_MoveTblX[0] = D3DXVECTOR3(    0.0f, 0.0f, 0.0f);
@@ -175,7 +180,7 @@ HRESULT InitEnemy(void)
 	g_MoveSpdZ[2] = 0.01f;
 	g_MoveTblZ[0] = D3DXVECTOR3(0.0f, 0.0f,     0.0f);
 	g_MoveTblZ[1] = D3DXVECTOR3(0.0f, 0.0f, -1000.0f);
-	g_MoveTblZ[2] = D3DXVECTOR3(0.0f, 0.0f,  1000.0f);
+	g_MoveTblZ[2] = D3DXVECTOR3(0.0f, 0.0f,  1000.0f);*/
 
 	return S_OK;
 }
@@ -199,7 +204,7 @@ void UpdateEnemy(void)
 	for (int i = 0; i < MAX_ENEMY; i++) {
 		if (g_Enemy[i].Use) {
 			//================Input
-			InputUpdate(g_Enemy[i]);
+			//InputUpdate(g_Enemy[i]);
 
 			//================Physics
 			PhysicsUpdate(g_Enemy[i]);
@@ -346,7 +351,7 @@ ENEMY *GetEnemy(void)
 //=============================================================================
 // エネミーのパラメータをセット
 //=============================================================================
-int SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scl, int enemyType)
+int SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scl, int enemyType, D3DXVECTOR3 reborn_pos)
 {
 	int IdxEnemy = -1;
 
@@ -366,11 +371,14 @@ int SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scl, int enemyType)
 			g_Enemy[i].scl = scl;
 			g_AnimOriScl[i] = scl;
 			g_Enemy[i].OriginPos = pos;
+			g_Enemy[i].Reborn_pos = reborn_pos;
 			g_Enemy[i].Status = EnemyStatus_Idle;
 			g_Enemy[i].speed = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 			g_AnimTimer[i] = 0.0f;
 
+
+			g_Enemy[i].move_time = clock();
 			// 影の設定
 			//g_Enemy[i].shadowIdx = CreateShadow(pos, ENEMY_SHADOW_SIZE, ENEMY_SHADOW_SIZE);
 
@@ -480,7 +488,7 @@ int SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scl, int enemyType)
 	return IdxEnemy;
 }
 
-int SetEnemyToID(int num, DX11_MODEL model, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scl, int enemyType)
+int SetEnemyToID(int num, DX11_MODEL model, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scl, int enemyType, D3DXVECTOR3 reborn_pos)
 {
 	int IdxEnemy = -1;
 
@@ -496,7 +504,11 @@ int SetEnemyToID(int num, DX11_MODEL model, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3
 	g_Enemy[num].scl = scl;
 	g_AnimOriScl[num] = scl;
 	g_Enemy[num].OriginPos = pos;
+	g_Enemy[num].Reborn_pos = reborn_pos;
 	g_Enemy[num].Status = EnemyStatus_Idle;
+
+
+	g_Enemy[num].move_time = clock();
 
 	g_AnimTimer[num] = 0.0f;
 
@@ -621,102 +633,376 @@ void InputUpdate(ENEMY & enemy) {
 }
 
 void PhysicsUpdate(ENEMY & enemy) {
-	if (enemy.Status != EnemyStatus_Dead ) {
+	srand((unsigned)time(NULL));
+	if (enemy.Status != EnemyStatus_Dead ) 
+	{
 		////==============普通移動
-		if (enemy.CanMove == false) {
-			D3DXVECTOR3 dir = enemy.speed;
-			D3DXVECTOR3 dirXZ = D3DXVECTOR3(enemy.speed.x, 0.0f, enemy.speed.z);
-			D3DXVec3Normalize(&dir, &dir);
-			D3DXVec3Normalize(&dirXZ, &dirXZ);
-			D3DXVECTOR3 speedXZ = D3DXVECTOR3(enemy.speed.x, 0.0f, enemy.speed.z);
+		D3DXVECTOR3 HitPoint, normal;
+		D3DXVECTOR3 gravity = D3DXVECTOR3(0.0f,-1.0f,0.0f);//エネミーの重力方向
+		
+		int rand_num= rand() % (100);
+		int rand_num2 = rand() % (2);
+		//回転の重力をここでgravity変数を変更
+		clock_t end = clock();
+		int move_time= (end - enemy.move_time) ;			//単位:1/1000秒
+		int a;
+		switch (a)
+		{
+		case 0:
+			//重力設定
+			gravity = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
+			//回転の時のみ、エネミーのROTを初期化		モデルの方向を修正
+			if (世界が回転の変数)
+			{
+				enemy.rot = D3DXVECTOR3(0.0f, 0.0f, D3DX_PI / 2);
+				世界が回転の変数初期化;
+			}
+			
+			//重力回転の後、新しい地面を判定
+			RayHitEnemy(enemy.pos, &HitPoint, &normal, enemy.enemyID, gravity);
+			//先ずは地面に立て
+			enemy.pos = HitPoint;
 
-			if (enemy.Canfly) {
-				if (D3DXVec3Length(&enemy.speed) > 0) {
-					enemy.speed -= dir * enemy.decelerate;
+			if ((move_time % 5000) == 0　|| 世界が回転の変数==true) //もし一段時間を進むだら移動方向を変更
+			{
+				//ランダムの移動方向を決定
+				if (rand_num2 > 1)
+				{
+					enemy.rot.x = D3DX_PI / rand_num;
+					enemy.speed = D3DXVECTOR3(0.0f, (-sinf(D3DX_PI / rand_num)), (-cosf(D3DX_PI / rand_num)));
 				}
-				if (D3DXVec3Length(&enemy.speed) <= enemy.decelerate) {
-					enemy.speed = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-				}
-				if (D3DXVec3Length(&enemy.speed) >= enemy.maxMoveSpeed) {
-					enemy.speed = dir * enemy.maxMoveSpeed;
+				else
+				{
+					enemy.rot.x = -D3DX_PI / rand_num;
+					enemy.speed = D3DXVECTOR3(0.0f, (+sinf(D3DX_PI / rand_num)), (+cosf(D3DX_PI / rand_num)));
 				}
 			}
+			
+			break;
+		case 1:
+			//重力設定
+			gravity = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
+			//回転の時のみ、エネミーのROTを初期化		モデルの方向を修正
+			if (世界が回転の変数)
+			{
+				enemy.rot = D3DXVECTOR3(0.0f, 0.0f, -D3DX_PI / 2);
+				世界が回転の変数初期化;
+			}
 
-			if (!enemy.Canfly) {
-				if (D3DXVec3Length(&speedXZ) > 0) {
-					enemy.speed -= dirXZ * enemy.decelerate;
-				}
-				if (D3DXVec3Length(&speedXZ) <= enemy.decelerate) {
-					enemy.speed.x = 0.0f;
-					enemy.speed.z = 0.0f;
-				}
+			//重力回転の後、新しい地面を判定
+			RayHitEnemy(enemy.pos, &HitPoint, &normal, enemy.enemyID, gravity);
+			//先ずは地面に立て
+			enemy.pos = HitPoint;
 
-				if (D3DXVec3Length(&speedXZ) >= enemy.maxMoveSpeed) {
-					enemy.speed.x = dirXZ.x * enemy.maxMoveSpeed;
-					enemy.speed.z = dirXZ.z * enemy.maxMoveSpeed;
+			if ((move_time % 5000) == 0 || 世界が回転の変数 == true) //もし一段時間を進むだら移動方向を変更
+			{
+				//ランダムの移動方向を決定
+				if (rand_num2 > 1)
+				{
+					enemy.rot.x = D3DX_PI / rand_num;
+					enemy.speed = D3DXVECTOR3(0.0f, (-sinf(D3DX_PI / rand_num)), (-cosf(D3DX_PI / rand_num)));
 				}
-				if (enemy.speed.y < VALUE_MAX_FALLEN_SPEED) {
-					enemy.speed.y = VALUE_MAX_FALLEN_SPEED;
+				else
+				{
+					enemy.rot.x = -D3DX_PI / rand_num;
+					enemy.speed = D3DXVECTOR3(0.0f, (+sinf(D3DX_PI / rand_num)), (+cosf(D3DX_PI / rand_num)));
 				}
 			}
-			if(enemy.Status == EnemyStatus_Chase)enemy.rot.y = (atan2f(dirXZ.z, dirXZ.x) - D3DX_PI * 0.5f) * -1.0f;   //coordinate(counter clockwise), obj rotation(clockwise) : different way => -1
-
+			break;
+		case 2:
+			//重力設定
+			gravity = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+			//回転の時のみ、エネミーのROTを初期化		モデルの方向を修正
+			if (世界が回転の変数)
+			{
+				enemy.rot = D3DXVECTOR3(D3DX_PI / 2, 0.0f, 0.0f);
+				世界が回転の変数初期化;
+			}
+			
+			//重力回転の後、新しい地面を判定
+			RayHitEnemy(enemy.pos, &HitPoint, &normal, enemy.enemyID, gravity);
+			//先ずは地面に立て
+			enemy.pos = HitPoint;
+			if ((move_time % 5000) == 0 || 世界が回転の変数 == true) //もし一段時間を進むだら移動方向を変更
+			{
+				//ランダムの移動方向を決定
+				if (rand_num2 > 1)
+				{
+					enemy.rot.x = D3DX_PI / rand_num;
+					enemy.speed = D3DXVECTOR3((-sinf(D3DX_PI / rand_num)), (-cosf(D3DX_PI / rand_num)), 0.0f);
+				}
+				else
+				{
+					enemy.rot.x = -D3DX_PI / rand_num;
+					enemy.speed = D3DXVECTOR3((+sinf(D3DX_PI / rand_num)), (+cosf(D3DX_PI / rand_num)), 0.0f);
+				}
+			}
+			break;
+		case 3:
+			//重力設定
+			gravity = D3DXVECTOR3(-D3DX_PI / 2, 0.0f, -1.0f);
+			//回転の時のみ、エネミーのROTを初期化		モデルの方向を修正
+			if (世界が回転の変数)
+			{
+				enemy.rot = D3DXVECTOR3(0.0f, 0.0f, D3DX_PI / 2);
+				世界が回転の変数初期化;
+			}
+			
+			//重力回転の後、新しい地面を判定
+			RayHitEnemy(enemy.pos, &HitPoint, &normal, enemy.enemyID, gravity);
+			//先ずは地面に立て
+			enemy.pos = HitPoint;
+			if ((move_time % 5000) == 0 || 世界が回転の変数 == true) //もし一段時間を進むだら移動方向を変更　
+			{
+				//ランダムの移動方向を決定
+				if (rand_num2 > 1)
+				{
+					enemy.rot.x = D3DX_PI / rand_num;
+					enemy.speed = D3DXVECTOR3((-sinf(D3DX_PI / rand_num)), (-cosf(D3DX_PI / rand_num)), 0.0f);
+				}
+				else
+				{
+					enemy.rot.x = -D3DX_PI / rand_num;
+					enemy.speed = D3DXVECTOR3((+sinf(D3DX_PI / rand_num)), (+cosf(D3DX_PI / rand_num)), 0.0f);
+				}
+			}
+			break;
+		case 4:
+			//重力設定
+			gravity = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+			//回転の時のみ、エネミーのROTを初期化		モデルの方向を修正
+			if (世界が回転の変数)
+			{
+				enemy.rot = D3DXVECTOR3(0.0f, 0.0f, D3DX_PI);
+				世界が回転の変数初期化;
+			}
+			
+			//重力回転の後、新しい地面を判定
+			RayHitEnemy(enemy.pos, &HitPoint, &normal, enemy.enemyID, gravity);
+			//先ずは地面に立て
+			enemy.pos = HitPoint;
+			if ((move_time % 5000) == 0 || 世界が回転の変数 == true)//もし一段時間を進むだら移動方向を変更　
+			{
+				//ランダムの移動方向を決定
+				if (rand_num2 > 1)
+				{
+					enemy.rot.x = D3DX_PI / rand_num;
+					enemy.speed = D3DXVECTOR3((-sinf(D3DX_PI / rand_num)), 0.0f, (-cosf(D3DX_PI / rand_num)));
+				}
+				else
+				{
+					enemy.rot.x = -D3DX_PI / rand_num;
+					enemy.speed = D3DXVECTOR3((+sinf(D3DX_PI / rand_num)), 0.0f, (+cosf(D3DX_PI / rand_num)));
+				}
+			}
+			break;
+		case 5:
+			//重力設定
+			gravity = D3DXVECTOR3(0.0f, -1.0f, 0.0f);
+			//回転の時のみ、エネミーのROTを初期化		モデルの方向を修正
+			if (世界が回転の変数)
+			{
+				enemy.rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+				世界が回転の変数初期化;
+			}
+			//重力回転の後、新しい地面を判定
+			RayHitEnemy(enemy.pos, &HitPoint, &normal, enemy.enemyID, gravity);
+			//先ずは地面に立て
+			enemy.pos = HitPoint;
+			if ((move_time % 5000) == 0 || 世界が回転の変数 == true) //もし一段時間を進むだら移動方向を変更
+			{
+				//ランダムの移動方向を決定
+				if (rand_num2 > 1)
+				{
+					enemy.rot.x = D3DX_PI / rand_num;
+					enemy.speed = D3DXVECTOR3((-sinf(D3DX_PI / rand_num)), 0.0f, (-cosf(D3DX_PI / rand_num)));
+				}
+				else
+				{
+					enemy.rot.x = -D3DX_PI / rand_num;
+					enemy.speed = D3DXVECTOR3((+sinf(D3DX_PI / rand_num)), 0.0f, (+cosf(D3DX_PI / rand_num)));
+				}
+			}
+			break;
+		default:
+			break;
 		}
+		//エネミーの前の捜査COLLIDERを回転とPOS修正
+
+
+
+		//Enemyの前のCOLLIDERの中に、プレイヤとOBB判定　もし当たったら移動方向を変更
+		bool ans=CheckHitByIDOBB(g_Player->bodyColliderIdx, enemy.BodyColliderIdx);
+		
+		if (ans)
+		{
+			D3DXVECTOR3 dir2 = g_Player->pos - enemy.pos;
+			switch (a)
+			{
+			case 0:
+				//このタイプの重力はgravity = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
+				dir2.x = 0.0f;
+				
+				break;
+			case 1:
+				//このタイプの重力はgravity = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
+				dir2.x = 0.0f;
+				break;
+			case 2:
+				//このタイプの重力はgravity = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+				dir2.z = 0.0f;
+				break;
+			case 3:
+				//このタイプの重力はgravity = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+				dir2.z = 0.0f;
+				break;
+			case 4:
+				//このタイプの重力はgravity = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+				dir2.y = 0.0f;
+				break;
+			case 5:
+				//このタイプの重力はgravity = D3DXVECTOR3(0.0f, -1.0f, 0.0f);
+				dir2.y = 0.0f;
+				break;
+			default:
+				break;
+			}
+			//エネミーの移動方向を修正
+			D3DXVec3Normalize(&dir2, &dir2);
+			enemy.speed += dir2 * enemy.decelerate;
+		}
+		else
+		{
+			//エネミーの移動方向を修正
+			D3DXVECTOR3 dir = enemy.speed;
+			D3DXVec3Normalize(&dir, &dir);
+			enemy.speed += dir * enemy.decelerate;
+		}
+		//新しい移動方向を加算
+		enemy.pos += enemy.speed;
+
+		//新しい壁を当たり判定
+
+
+
+
+		//重生点を修正
+		/*
+		D3DXMATRIX mtxWorld;
+		D3DXMATRIX mtxRot, mtxTranslate;
+		D3DXVECTOR3 NewPos;
+		D3DXVECTOR3 OldPos = enemy.Reborn_pos;
+		// 移動を反映
+		D3DXMatrixTranslation(&mtxTranslate, OldPos.x, OldPos.y, OldPos.z);
+		D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxTranslate);
+		// 回転を反映
+		D3DXMatrixRotationYawPitchRoll(&mtxRot, deltaRot.x, deltaRot.y, deltaRot.x);
+		D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
+
+		D3DXVec3TransformCoord(&NewPos, &NewPos, &mtxWorld);
+		
+		enemy.Reborn_pos = NewPos;
+		*/
+		
+
+
+
+
+
+		//if (enemy.CanMove == false) {
+		//	D3DXVECTOR3 dir = enemy.speed;
+		//	D3DXVECTOR3 dirXZ = D3DXVECTOR3(enemy.speed.x, 0.0f, enemy.speed.z);
+		//	D3DXVec3Normalize(&dir, &dir);
+		//	D3DXVec3Normalize(&dirXZ, &dirXZ);
+		//	D3DXVECTOR3 speedXZ = D3DXVECTOR3(enemy.speed.x, 0.0f, enemy.speed.z);
+
+		//	if (enemy.Canfly) {
+		//		if (D3DXVec3Length(&enemy.speed) > 0) {
+		//			enemy.speed -= dir * enemy.decelerate;
+		//		}
+		//		if (D3DXVec3Length(&enemy.speed) <= enemy.decelerate) {
+		//			enemy.speed = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		//		}
+		//		if (D3DXVec3Length(&enemy.speed) >= enemy.maxMoveSpeed) {
+		//			enemy.speed = dir * enemy.maxMoveSpeed;
+		//		}
+		//	}
+
+		//	if (!enemy.Canfly) {
+		//		if (D3DXVec3Length(&speedXZ) > 0) {
+		//			enemy.speed -= dirXZ * enemy.decelerate;
+		//		}
+		//		if (D3DXVec3Length(&speedXZ) <= enemy.decelerate) {
+		//			enemy.speed.x = 0.0f;
+		//			enemy.speed.z = 0.0f;
+		//		}
+
+		//		if (D3DXVec3Length(&speedXZ) >= enemy.maxMoveSpeed) {
+		//			enemy.speed.x = dirXZ.x * enemy.maxMoveSpeed;
+		//			enemy.speed.z = dirXZ.z * enemy.maxMoveSpeed;
+		//		}
+		//		if (enemy.speed.y < VALUE_MAX_FALLEN_SPEED) {
+		//			enemy.speed.y = VALUE_MAX_FALLEN_SPEED;
+		//		}
+		//	}
+		//	if(enemy.Status == EnemyStatus_Chase)enemy.rot.y = (atan2f(dirXZ.z, dirXZ.x) - D3DX_PI * 0.5f) * -1.0f;   //coordinate(counter clockwise), obj rotation(clockwise) : different way => -1
+
+		//}
 
 
 		////==============ライン移動  =====> change to point to point accoring to obj speed? オブジェクトのスピードによって、点からの動くにするほうがいいかな？
 		//=線形移動 
-		if (enemy.CanMove == true) {
-			if (enemy.canmoveAxis == 0) { // X
-				int nowNo = (int)enemy.LMtime; //Liner move time
-				int maxNo = (sizeof(g_MoveTblX) / sizeof(D3DXVECTOR3));
-				int nextNo = (nowNo + 1) % maxNo;
-				D3DXVECTOR3 pos = g_MoveTblX[nextNo] - g_MoveTblX[nowNo];
-				float nowTime = enemy.LMtime - nowNo;
-				pos *= nowTime;
-				if (nowNo == 0)enemy.rot.y = D3DX_PI * 1.5f;
-				if (nowNo == 1)enemy.rot.y = D3DX_PI * 0.5f;
-				if (nowNo == 2)enemy.rot.y = D3DX_PI * 1.5f;
-				enemy.CaculatedPos = enemy.pos + g_MoveTblX[nowNo] + pos;
-				enemy.LMtime += g_MoveSpdX[nowNo];
-				if ((int)enemy.LMtime >= maxNo) {
-					enemy.LMtime = 0.0f;
-				}
-			}
-			else if (enemy.canmoveAxis == 1) { // Y
-				int nowNo = (int)enemy.LMtime; //Liner move time
-				int maxNo = (sizeof(g_MoveTblY) / sizeof(D3DXVECTOR3));
-				int nextNo = (nowNo + 1) % maxNo;
-				D3DXVECTOR3 pos = g_MoveTblY[nextNo] - g_MoveTblY[nowNo];
-				float nowTime = enemy.LMtime - nowNo;
-				pos *= nowTime;
-				enemy.CaculatedPos = enemy.pos + g_MoveTblY[nowNo] + pos;
-				enemy.LMtime += g_MoveSpdX[nowNo];
-				if ((int)enemy.LMtime >= maxNo) {
-					enemy.LMtime = 0.0f;
-				}
-			}
-			else if (enemy.canmoveAxis == 2) { // Z
-				int nowNo = (int)enemy.LMtime; //Liner move time
-				int maxNo = (sizeof(g_MoveTblZ) / sizeof(D3DXVECTOR3));
-				int nextNo = (nowNo + 1) % maxNo;
-				D3DXVECTOR3 pos = g_MoveTblZ[nextNo] - g_MoveTblZ[nowNo];
-				float nowTime = enemy.LMtime - nowNo;
-				pos *= nowTime;
-				if(nowNo == 0)enemy.rot.y = D3DX_PI * 1.0f;
-				if(nowNo == 1)enemy.rot.y = D3DX_PI * 0.0f;
-				if(nowNo == 2)enemy.rot.y = D3DX_PI * 1.0f;
-				enemy.CaculatedPos = enemy.pos + g_MoveTblZ[nowNo] + pos;
-				enemy.LMtime += g_MoveSpdX[nowNo];
-				if ((int)enemy.LMtime >= maxNo) {
-					enemy.LMtime = 0.0f;
-				}
-			}
-			if (enemy.canmoveAxis == -1)enemy.CanMove = false;
-		}
-		else {
-			if (enemy.canmoveAxis != -1 && enemy.Status == EnemyStatus_Idle)enemy.CanMove = true;
-		}
+		//if (enemy.CanMove == true) {
+		//	if (enemy.canmoveAxis == 0) { // X
+		//		int nowNo = (int)enemy.LMtime; //Liner move time
+		//		int maxNo = (sizeof(g_MoveTblX) / sizeof(D3DXVECTOR3));
+		//		int nextNo = (nowNo + 1) % maxNo;
+		//		D3DXVECTOR3 pos = g_MoveTblX[nextNo] - g_MoveTblX[nowNo];
+		//		float nowTime = enemy.LMtime - nowNo;
+		//		pos *= nowTime;
+		//		if (nowNo == 0)enemy.rot.y = D3DX_PI * 1.5f;
+		//		if (nowNo == 1)enemy.rot.y = D3DX_PI * 0.5f;
+		//		if (nowNo == 2)enemy.rot.y = D3DX_PI * 1.5f;
+		//		enemy.CaculatedPos = enemy.pos + g_MoveTblX[nowNo] + pos;
+		//		enemy.LMtime += g_MoveSpdX[nowNo];
+		//		if ((int)enemy.LMtime >= maxNo) {
+		//			enemy.LMtime = 0.0f;
+		//		}
+		//	}
+		//	else if (enemy.canmoveAxis == 1) { // Y
+		//		int nowNo = (int)enemy.LMtime; //Liner move time
+		//		int maxNo = (sizeof(g_MoveTblY) / sizeof(D3DXVECTOR3));
+		//		int nextNo = (nowNo + 1) % maxNo;
+		//		D3DXVECTOR3 pos = g_MoveTblY[nextNo] - g_MoveTblY[nowNo];
+		//		float nowTime = enemy.LMtime - nowNo;
+		//		pos *= nowTime;
+		//		enemy.CaculatedPos = enemy.pos + g_MoveTblY[nowNo] + pos;
+		//		enemy.LMtime += g_MoveSpdX[nowNo];
+		//		if ((int)enemy.LMtime >= maxNo) {
+		//			enemy.LMtime = 0.0f;
+		//		}
+		//	}
+		//	else if (enemy.canmoveAxis == 2) { // Z
+		//		int nowNo = (int)enemy.LMtime; //Liner move time
+		//		int maxNo = (sizeof(g_MoveTblZ) / sizeof(D3DXVECTOR3));
+		//		int nextNo = (nowNo + 1) % maxNo;
+		//		D3DXVECTOR3 pos = g_MoveTblZ[nextNo] - g_MoveTblZ[nowNo];
+		//		float nowTime = enemy.LMtime - nowNo;
+		//		pos *= nowTime;
+		//		if(nowNo == 0)enemy.rot.y = D3DX_PI * 1.0f;
+		//		if(nowNo == 1)enemy.rot.y = D3DX_PI * 0.0f;
+		//		if(nowNo == 2)enemy.rot.y = D3DX_PI * 1.0f;
+		//		enemy.CaculatedPos = enemy.pos + g_MoveTblZ[nowNo] + pos;
+		//		enemy.LMtime += g_MoveSpdX[nowNo];
+		//		if ((int)enemy.LMtime >= maxNo) {
+		//			enemy.LMtime = 0.0f;
+		//		}
+		//	}
+		//	if (enemy.canmoveAxis == -1)enemy.CanMove = false;
+		//}
+		//else {
+		//	if (enemy.canmoveAxis != -1 && enemy.Status == EnemyStatus_Idle)enemy.CanMove = true;
+		//}
 	}
 	//==========Wall Detect \\ checkBB only
 	//int targetCID;
@@ -810,12 +1096,12 @@ void PhysicsUpdate(ENEMY & enemy) {
 	//	else enemy.speed.y = 0.0f;
 	//}
 	//Dead
-	if (enemy.Status == EnemyStatus_Dead) {
+	/*if (enemy.Status == EnemyStatus_Dead) {
 		enemy.speed.y -= VALUE_DEAD_GRAVITY;
 		if (enemy.speed.y < VALUE_MAX_FALLEN_SPEED) {
 			enemy.speed.y = VALUE_MAX_FALLEN_SPEED;
 		}
-	}
+	}*/
 
 	//Update Speed
 	enemy.pos += enemy.speed;
