@@ -58,6 +58,7 @@ struct ENEMY
 	int             enemyID;
 	int             BodyColliderIdx;        // colliderのインデックス番号
 	int             ChaseColliderIdx;       // colliderのインデックス番号
+	int             SearchColliderIdx;       // colliderのインデックス番号
 	int             GroundCheckColliderIdx; // colliderのインデックス番号
 	int				shadowIdx;			    // 影のインデックス番号
 	int             enemyType;
@@ -84,6 +85,7 @@ struct ENEMY
 	D3DXVECTOR3         Moving_Plat_PrePos;
 	D3DXVECTOR3         Moving_Plat_Speed;
 	D3DXVECTOR3         ChaceArea;          // 追尾範囲
+	D3DXVECTOR3         SearchArea;          // 追尾範囲
 	D3DXVECTOR3         OriginPos;          // 元の位置
 	
 	D3DXVECTOR3         movingOriginPos;    // 動ける元の位置

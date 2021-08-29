@@ -1682,7 +1682,7 @@ bool RayCast(D3DXVECTOR3 p0, D3DXVECTOR3 p1, D3DXVECTOR3 p2, D3DXVECTOR3 pos0, D
 }
 
 
-bool RayHitEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 * HitPosition, D3DXVECTOR3 * Normal, int id, D3DXVECTOR3  Rayway)
+bool RayHitEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 * HitPosition, D3DXVECTOR3 * Normal, D3DXVECTOR3  Rayway)
 {
 	D3DXVECTOR3 start = pos;
 	D3DXVECTOR3 end = pos;
@@ -1690,6 +1690,8 @@ bool RayHitEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 * HitPosition, D3DXVECTOR3 * Norma
 	D3DXVECTOR3 NormalTemp;
 
 	D3DXVECTOR3 *caculatedNormal = NULL;
+
+	今のモデルを変更
 	caculatedNormal = getGroundNormal(id);
 	DX11_MODEL model = getGroundModel(id);
 

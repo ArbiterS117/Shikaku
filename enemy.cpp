@@ -47,6 +47,12 @@
 #define CHASE_DETECT_AREA_X        (1000.0f)
 #define CHASE_DETECT_AREA_Y        (500.0f)
 #define CHASE_DETECT_AREA_Z        (1000.0f)
+
+#define SEARCH_AREA_X        (1000.0f)
+#define SEARCH_AREA_Y        (500.0f)
+#define SEARCH_AREA_Z        (1000.0f)
+
+
 #define CHASEING_AREA_X            (4000.0f)
 #define CHASEING_AREA_Y            (5000.0f)
 #define CHASEING_AREA_Z            (4000.0f)
@@ -130,6 +136,7 @@ HRESULT InitEnemy(void)
 		g_Enemy[i].GroundCheckColliderIdx = -1;
 		g_Enemy[i].ChaseColliderIdx = -1;
 		g_Enemy[i].ChaceArea = D3DXVECTOR3(CHASE_DETECT_AREA_X, CHASE_DETECT_AREA_Y, CHASE_DETECT_AREA_Z);
+		g_Enemy[i].SearchArea = D3DXVECTOR3(SEARCH_AREA_X, SEARCH_AREA_Y, SEARCH_AREA_Z);
 		g_Enemy[i].deadToDestroyTimer = 0;
 		//system
 		g_Enemy[i].enemyID  = 0;   // 0 = default : can not use for searching
@@ -396,6 +403,8 @@ int SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scl, int enemyType, D
 					g_Enemy[i].scl.y* EnemyColliderSize[enemyType].y * ENEMY_GROUND_CHECK_THIN, g_Enemy[i].scl.z* EnemyColliderSize[enemyType].z, g_Enemy[i].enemyID);
 				g_Enemy[i].ChaseColliderIdx = CreateCollider3DBox(collider3DTag_EnemyChaseCheck, pos, g_Enemy[i].ChaceArea.x, 
 					g_Enemy[i].ChaceArea.y, g_Enemy[i].ChaceArea.z, g_Enemy[i].enemyID);
+				g_Enemy[i].SearchColliderIdx = CreateCollider3DBox(collider3DTag_EnemySearchCheck, pos, g_Enemy[i].SearchArea.x,
+					g_Enemy[i].SearchArea.y, g_Enemy[i].SearchArea.z, g_Enemy[i].enemyID);
 				g_Enemy[i].Canfly = true;
 				break;
 			case EnemyType_wind:
@@ -406,6 +415,9 @@ int SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scl, int enemyType, D
 					g_Enemy[i].scl.y* EnemyColliderSize[enemyType].y * ENEMY_GROUND_CHECK_THIN, g_Enemy[i].scl.z* EnemyColliderSize[enemyType].z, g_Enemy[i].enemyID);
 				g_Enemy[i].ChaseColliderIdx = CreateCollider3DBox(collider3DTag_EnemyChaseCheck, pos, g_Enemy[i].ChaceArea.x,
 					g_Enemy[i].ChaceArea.y, g_Enemy[i].ChaceArea.z, g_Enemy[i].enemyID);
+				g_Enemy[i].SearchColliderIdx = CreateCollider3DBox(collider3DTag_EnemySearchCheck, pos, g_Enemy[i].SearchArea.x,
+					g_Enemy[i].SearchArea.y, g_Enemy[i].SearchArea.z, g_Enemy[i].enemyID);
+				
 				g_Enemy[i].Canfly = true;
 				break;
 			case EnemyType_water:
@@ -416,6 +428,8 @@ int SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scl, int enemyType, D
 					g_Enemy[i].scl.y* EnemyColliderSize[enemyType].y * ENEMY_GROUND_CHECK_THIN, g_Enemy[i].scl.z* EnemyColliderSize[enemyType].z, g_Enemy[i].enemyID);
 				g_Enemy[i].ChaseColliderIdx = CreateCollider3DBox(collider3DTag_EnemyChaseCheck, pos, g_Enemy[i].ChaceArea.x,
 					g_Enemy[i].ChaceArea.y, g_Enemy[i].ChaceArea.z, g_Enemy[i].enemyID);
+				g_Enemy[i].SearchColliderIdx = CreateCollider3DBox(collider3DTag_EnemySearchCheck, pos, g_Enemy[i].SearchArea.x,
+					g_Enemy[i].SearchArea.y, g_Enemy[i].SearchArea.z, g_Enemy[i].enemyID);
 				g_Enemy[i].Canfly = true;
 				break;
 			case EnemyType_gem:
@@ -426,6 +440,8 @@ int SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scl, int enemyType, D
 					g_Enemy[i].scl.y* EnemyColliderSize[enemyType].y * ENEMY_GROUND_CHECK_THIN, g_Enemy[i].scl.z* EnemyColliderSize[enemyType].z, g_Enemy[i].enemyID);
 				g_Enemy[i].ChaseColliderIdx = CreateCollider3DBox(collider3DTag_EnemyChaseCheck, pos, g_Enemy[i].ChaceArea.x,
 					g_Enemy[i].ChaceArea.y, g_Enemy[i].ChaceArea.z, g_Enemy[i].enemyID);
+				g_Enemy[i].SearchColliderIdx = CreateCollider3DBox(collider3DTag_EnemySearchCheck, pos, g_Enemy[i].SearchArea.x,
+					g_Enemy[i].SearchArea.y, g_Enemy[i].SearchArea.z, g_Enemy[i].enemyID);
 				g_Enemy[i].Canfly = true;
 				break;
 			case EnemyType_star:
@@ -436,6 +452,8 @@ int SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scl, int enemyType, D
 					g_Enemy[i].scl.y* EnemyColliderSize[enemyType].y * ENEMY_GROUND_CHECK_THIN, g_Enemy[i].scl.z* EnemyColliderSize[enemyType].z, g_Enemy[i].enemyID);
 				g_Enemy[i].ChaseColliderIdx = CreateCollider3DBox(collider3DTag_EnemyChaseCheck, pos, g_Enemy[i].ChaceArea.x,
 					g_Enemy[i].ChaceArea.y, g_Enemy[i].ChaceArea.z, g_Enemy[i].enemyID);
+				g_Enemy[i].SearchColliderIdx = CreateCollider3DBox(collider3DTag_EnemySearchCheck, pos, g_Enemy[i].SearchArea.x,
+					g_Enemy[i].SearchArea.y, g_Enemy[i].SearchArea.z, g_Enemy[i].enemyID);
 				g_Enemy[i].Canfly = true;
 				break;
 			case EnemyType_coin:
@@ -446,6 +464,8 @@ int SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scl, int enemyType, D
 					g_Enemy[i].scl.y* EnemyColliderSize[enemyType].y * ENEMY_GROUND_CHECK_THIN, g_Enemy[i].scl.z* EnemyColliderSize[enemyType].z, g_Enemy[i].enemyID);
 				g_Enemy[i].ChaseColliderIdx = CreateCollider3DBox(collider3DTag_EnemyChaseCheck, pos, g_Enemy[i].ChaceArea.x,
 					g_Enemy[i].ChaceArea.y, g_Enemy[i].ChaceArea.z, g_Enemy[i].enemyID);
+				g_Enemy[i].SearchColliderIdx = CreateCollider3DBox(collider3DTag_EnemySearchCheck, pos, g_Enemy[i].SearchArea.x,
+					g_Enemy[i].SearchArea.y, g_Enemy[i].SearchArea.z, g_Enemy[i].enemyID);
 				g_Enemy[i].Canfly = true;
 				break;
 			case EnemyType_quickSand:
@@ -456,6 +476,8 @@ int SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scl, int enemyType, D
 					g_Enemy[i].scl.y* EnemyColliderSize[enemyType].y * ENEMY_GROUND_CHECK_THIN, g_Enemy[i].scl.z* EnemyColliderSize[enemyType].z, g_Enemy[i].enemyID);
 				g_Enemy[i].ChaseColliderIdx = CreateCollider3DBox(collider3DTag_EnemyChaseCheck, pos, g_Enemy[i].ChaceArea.x,
 					g_Enemy[i].ChaceArea.y, g_Enemy[i].ChaceArea.z, g_Enemy[i].enemyID);
+				g_Enemy[i].SearchColliderIdx = CreateCollider3DBox(collider3DTag_EnemySearchCheck, pos, g_Enemy[i].SearchArea.x,
+					g_Enemy[i].SearchArea.y, g_Enemy[i].SearchArea.z, g_Enemy[i].enemyID);
 				g_Enemy[i].Canfly = true;
 				break;
 			case EnemyType_mushroomSpring:
@@ -466,6 +488,8 @@ int SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scl, int enemyType, D
 					g_Enemy[i].scl.y* EnemyColliderSize[enemyType].y * ENEMY_GROUND_CHECK_THIN, g_Enemy[i].scl.z* EnemyColliderSize[enemyType].z, g_Enemy[i].enemyID);
 				g_Enemy[i].ChaseColliderIdx = CreateCollider3DBox(collider3DTag_EnemyChaseCheck, pos, g_Enemy[i].ChaceArea.x,
 					g_Enemy[i].ChaceArea.y, g_Enemy[i].ChaceArea.z, g_Enemy[i].enemyID);
+				g_Enemy[i].SearchColliderIdx = CreateCollider3DBox(collider3DTag_EnemySearchCheck, pos, g_Enemy[i].SearchArea.x,
+					g_Enemy[i].SearchArea.y, g_Enemy[i].SearchArea.z, g_Enemy[i].enemyID);
 				g_Enemy[i].Canfly = true;
 				break;
 			case EnemyType_Sign:
@@ -476,6 +500,8 @@ int SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scl, int enemyType, D
 					g_Enemy[i].scl.y* EnemyColliderSize[enemyType].y * ENEMY_GROUND_CHECK_THIN, g_Enemy[i].scl.z* EnemyColliderSize[enemyType].z, g_Enemy[i].enemyID);
 				g_Enemy[i].ChaseColliderIdx = CreateCollider3DBox(collider3DTag_EnemyChaseCheck, pos, g_Enemy[i].ChaceArea.x,
 					g_Enemy[i].ChaceArea.y, g_Enemy[i].ChaceArea.z, g_Enemy[i].enemyID);
+				g_Enemy[i].SearchColliderIdx = CreateCollider3DBox(collider3DTag_EnemySearchCheck, pos, g_Enemy[i].SearchArea.x,
+					g_Enemy[i].SearchArea.y, g_Enemy[i].SearchArea.z, g_Enemy[i].enemyID);
 				g_Enemy[i].Canfly = true;
 				break;
 			default:
@@ -526,6 +552,8 @@ int SetEnemyToID(int num, DX11_MODEL model, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3
 			g_Enemy[num].scl.y* EnemyColliderSize[enemyType].y * ENEMY_GROUND_CHECK_THIN, g_Enemy[num].scl.z* EnemyColliderSize[enemyType].z, g_Enemy[num].enemyID);
 		g_Enemy[num].ChaseColliderIdx = CreateCollider3DBox(collider3DTag_EnemyChaseCheck, pos, g_Enemy[num].ChaceArea.x,
 			g_Enemy[num].ChaceArea.y, g_Enemy[num].ChaceArea.z, g_Enemy[num].enemyID);
+		g_Enemy[num].SearchColliderIdx = CreateCollider3DBox(collider3DTag_EnemySearchCheck, pos, g_Enemy[num].SearchArea.x,
+			g_Enemy[num].SearchArea.y, g_Enemy[num].SearchArea.z, g_Enemy[num].enemyID);
 		g_Enemy[num].Canfly = true;
 		break;
 	case EnemyType_wind:
@@ -536,6 +564,8 @@ int SetEnemyToID(int num, DX11_MODEL model, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3
 			g_Enemy[num].scl.y* EnemyColliderSize[enemyType].y * ENEMY_GROUND_CHECK_THIN, g_Enemy[num].scl.z* EnemyColliderSize[enemyType].z, g_Enemy[num].enemyID);
 		g_Enemy[num].ChaseColliderIdx = CreateCollider3DBox(collider3DTag_EnemyChaseCheck, pos, g_Enemy[num].ChaceArea.x,
 			g_Enemy[num].ChaceArea.y, g_Enemy[num].ChaceArea.z, g_Enemy[num].enemyID);
+		g_Enemy[num].SearchColliderIdx = CreateCollider3DBox(collider3DTag_EnemySearchCheck, pos, g_Enemy[num].SearchArea.x,
+			g_Enemy[num].SearchArea.y, g_Enemy[num].SearchArea.z, g_Enemy[num].enemyID);
 		g_Enemy[num].Canfly = true;
 		break;
 	case EnemyType_water:
@@ -546,6 +576,8 @@ int SetEnemyToID(int num, DX11_MODEL model, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3
 			g_Enemy[num].scl.y* EnemyColliderSize[enemyType].y * ENEMY_GROUND_CHECK_THIN, g_Enemy[num].scl.z* EnemyColliderSize[enemyType].z, g_Enemy[num].enemyID);
 		g_Enemy[num].ChaseColliderIdx = CreateCollider3DBox(collider3DTag_EnemyChaseCheck, pos, g_Enemy[num].ChaceArea.x,
 			g_Enemy[num].ChaceArea.y, g_Enemy[num].ChaceArea.z, g_Enemy[num].enemyID);
+		g_Enemy[num].SearchColliderIdx = CreateCollider3DBox(collider3DTag_EnemySearchCheck, pos, g_Enemy[num].SearchArea.x,
+			g_Enemy[num].SearchArea.y, g_Enemy[num].SearchArea.z, g_Enemy[num].enemyID);
 		g_Enemy[num].Canfly = true;
 		break;
 	case EnemyType_gem:
@@ -556,6 +588,8 @@ int SetEnemyToID(int num, DX11_MODEL model, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3
 			g_Enemy[num].scl.y* EnemyColliderSize[enemyType].y * ENEMY_GROUND_CHECK_THIN, g_Enemy[num].scl.z* EnemyColliderSize[enemyType].z, g_Enemy[num].enemyID);
 		g_Enemy[num].ChaseColliderIdx = CreateCollider3DBox(collider3DTag_EnemyChaseCheck, pos, g_Enemy[num].ChaceArea.x,
 			g_Enemy[num].ChaceArea.y, g_Enemy[num].ChaceArea.z, g_Enemy[num].enemyID);
+		g_Enemy[num].SearchColliderIdx = CreateCollider3DBox(collider3DTag_EnemySearchCheck, pos, g_Enemy[num].SearchArea.x,
+			g_Enemy[num].SearchArea.y, g_Enemy[num].SearchArea.z, g_Enemy[num].enemyID);
 		g_Enemy[num].Canfly = true;
 		break;
 	case EnemyType_star:
@@ -566,6 +600,8 @@ int SetEnemyToID(int num, DX11_MODEL model, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3
 			g_Enemy[num].scl.y* EnemyColliderSize[enemyType].y * ENEMY_GROUND_CHECK_THIN, g_Enemy[num].scl.z* EnemyColliderSize[enemyType].z, g_Enemy[num].enemyID);
 		g_Enemy[num].ChaseColliderIdx = CreateCollider3DBox(collider3DTag_EnemyChaseCheck, pos, g_Enemy[num].ChaceArea.x,
 			g_Enemy[num].ChaceArea.y, g_Enemy[num].ChaceArea.z, g_Enemy[num].enemyID);
+		g_Enemy[num].SearchColliderIdx = CreateCollider3DBox(collider3DTag_EnemySearchCheck, pos, g_Enemy[num].SearchArea.x,
+			g_Enemy[num].SearchArea.y, g_Enemy[num].SearchArea.z, g_Enemy[num].enemyID);
 		g_Enemy[num].Canfly = true;
 		break;
 	case EnemyType_coin:
@@ -576,6 +612,8 @@ int SetEnemyToID(int num, DX11_MODEL model, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3
 			g_Enemy[num].scl.y* EnemyColliderSize[enemyType].y * ENEMY_GROUND_CHECK_THIN, g_Enemy[num].scl.z* EnemyColliderSize[enemyType].z, g_Enemy[num].enemyID);
 		g_Enemy[num].ChaseColliderIdx = CreateCollider3DBox(collider3DTag_EnemyChaseCheck, pos, g_Enemy[num].ChaceArea.x,
 			g_Enemy[num].ChaceArea.y, g_Enemy[num].ChaceArea.z, g_Enemy[num].enemyID);
+		g_Enemy[num].SearchColliderIdx = CreateCollider3DBox(collider3DTag_EnemySearchCheck, pos, g_Enemy[num].SearchArea.x,
+			g_Enemy[num].SearchArea.y, g_Enemy[num].SearchArea.z, g_Enemy[num].enemyID);
 		g_Enemy[num].Canfly = true;
 		break;
 	case EnemyType_quickSand:
@@ -586,6 +624,8 @@ int SetEnemyToID(int num, DX11_MODEL model, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3
 			g_Enemy[num].scl.y* EnemyColliderSize[enemyType].y * ENEMY_GROUND_CHECK_THIN, g_Enemy[num].scl.z* EnemyColliderSize[enemyType].z, g_Enemy[num].enemyID);
 		g_Enemy[num].ChaseColliderIdx = CreateCollider3DBox(collider3DTag_EnemyChaseCheck, pos, g_Enemy[num].ChaceArea.x,
 			g_Enemy[num].ChaceArea.y, g_Enemy[num].ChaceArea.z, g_Enemy[num].enemyID);
+		g_Enemy[num].SearchColliderIdx = CreateCollider3DBox(collider3DTag_EnemySearchCheck, pos, g_Enemy[num].SearchArea.x,
+			g_Enemy[num].SearchArea.y, g_Enemy[num].SearchArea.z, g_Enemy[num].enemyID);
 		g_Enemy[num].Canfly = true;
 		break; 
 	case EnemyType_mushroomSpring:
@@ -596,6 +636,8 @@ int SetEnemyToID(int num, DX11_MODEL model, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3
 			g_Enemy[num].scl.y* EnemyColliderSize[enemyType].y * ENEMY_GROUND_CHECK_THIN, g_Enemy[num].scl.z* EnemyColliderSize[enemyType].z, g_Enemy[num].enemyID);
 		g_Enemy[num].ChaseColliderIdx = CreateCollider3DBox(collider3DTag_EnemyChaseCheck, pos, g_Enemy[num].ChaceArea.x,
 			g_Enemy[num].ChaceArea.y, g_Enemy[num].ChaceArea.z, g_Enemy[num].enemyID);
+		g_Enemy[num].SearchColliderIdx = CreateCollider3DBox(collider3DTag_EnemySearchCheck, pos, g_Enemy[num].SearchArea.x,
+			g_Enemy[num].SearchArea.y, g_Enemy[num].SearchArea.z, g_Enemy[num].enemyID);
 		g_Enemy[num].Canfly = true;
 		break;
 	case EnemyType_Sign:
@@ -606,6 +648,8 @@ int SetEnemyToID(int num, DX11_MODEL model, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3
 			g_Enemy[num].scl.y* EnemyColliderSize[enemyType].y * ENEMY_GROUND_CHECK_THIN, g_Enemy[num].scl.z* EnemyColliderSize[enemyType].z, g_Enemy[num].enemyID);
 		g_Enemy[num].ChaseColliderIdx = CreateCollider3DBox(collider3DTag_EnemyChaseCheck, pos, g_Enemy[num].ChaceArea.x,
 			g_Enemy[num].ChaceArea.y, g_Enemy[num].ChaceArea.z, g_Enemy[num].enemyID);
+		g_Enemy[num].SearchColliderIdx = CreateCollider3DBox(collider3DTag_EnemySearchCheck, pos, g_Enemy[num].SearchArea.x,
+			g_Enemy[num].SearchArea.y, g_Enemy[num].SearchArea.z, g_Enemy[num].enemyID);
 		g_Enemy[num].Canfly = true;
 		break;
 	}
@@ -645,8 +689,8 @@ void PhysicsUpdate(ENEMY & enemy) {
 		//回転の重力をここでgravity変数を変更
 		clock_t end = clock();
 		int move_time= (end - enemy.move_time) ;			//単位:1/1000秒
-		int a;
-		switch (a)
+		
+		switch (判断今回転の状況の変数)
 		{
 		case 0:
 			//重力設定
@@ -659,11 +703,11 @@ void PhysicsUpdate(ENEMY & enemy) {
 			}
 			
 			//重力回転の後、新しい地面を判定
-			RayHitEnemy(enemy.pos, &HitPoint, &normal, enemy.enemyID, gravity);
+			RayHitEnemy(enemy.pos, &HitPoint, &normal, gravity);
 			//先ずは地面に立て
 			enemy.pos = HitPoint;
 
-			if ((move_time % 5000) == 0　|| 世界が回転の変数==true) //もし一段時間を進むだら移動方向を変更
+			if ((move_time % 5000) == 0	|| 世界が回転の変数==true) //もし一段時間を進むだら移動方向を変更
 			{
 				//ランダムの移動方向を決定
 				if (rand_num2 > 1)
@@ -678,6 +722,7 @@ void PhysicsUpdate(ENEMY & enemy) {
 				}
 			}
 			
+
 			break;
 		case 1:
 			//重力設定
@@ -690,7 +735,7 @@ void PhysicsUpdate(ENEMY & enemy) {
 			}
 
 			//重力回転の後、新しい地面を判定
-			RayHitEnemy(enemy.pos, &HitPoint, &normal, enemy.enemyID, gravity);
+			RayHitEnemy(enemy.pos, &HitPoint, &normal,  gravity);
 			//先ずは地面に立て
 			enemy.pos = HitPoint;
 
@@ -720,7 +765,7 @@ void PhysicsUpdate(ENEMY & enemy) {
 			}
 			
 			//重力回転の後、新しい地面を判定
-			RayHitEnemy(enemy.pos, &HitPoint, &normal, enemy.enemyID, gravity);
+			RayHitEnemy(enemy.pos, &HitPoint, &normal, gravity);
 			//先ずは地面に立て
 			enemy.pos = HitPoint;
 			if ((move_time % 5000) == 0 || 世界が回転の変数 == true) //もし一段時間を進むだら移動方向を変更
@@ -749,7 +794,7 @@ void PhysicsUpdate(ENEMY & enemy) {
 			}
 			
 			//重力回転の後、新しい地面を判定
-			RayHitEnemy(enemy.pos, &HitPoint, &normal, enemy.enemyID, gravity);
+			RayHitEnemy(enemy.pos, &HitPoint, &normal,  gravity);
 			//先ずは地面に立て
 			enemy.pos = HitPoint;
 			if ((move_time % 5000) == 0 || 世界が回転の変数 == true) //もし一段時間を進むだら移動方向を変更　
@@ -778,7 +823,7 @@ void PhysicsUpdate(ENEMY & enemy) {
 			}
 			
 			//重力回転の後、新しい地面を判定
-			RayHitEnemy(enemy.pos, &HitPoint, &normal, enemy.enemyID, gravity);
+			RayHitEnemy(enemy.pos, &HitPoint, &normal,  gravity);
 			//先ずは地面に立て
 			enemy.pos = HitPoint;
 			if ((move_time % 5000) == 0 || 世界が回転の変数 == true)//もし一段時間を進むだら移動方向を変更　
@@ -806,7 +851,7 @@ void PhysicsUpdate(ENEMY & enemy) {
 				世界が回転の変数初期化;
 			}
 			//重力回転の後、新しい地面を判定
-			RayHitEnemy(enemy.pos, &HitPoint, &normal, enemy.enemyID, gravity);
+			RayHitEnemy(enemy.pos, &HitPoint, &normal,  gravity);
 			//先ずは地面に立て
 			enemy.pos = HitPoint;
 			if ((move_time % 5000) == 0 || 世界が回転の変数 == true) //もし一段時間を進むだら移動方向を変更
@@ -828,16 +873,19 @@ void PhysicsUpdate(ENEMY & enemy) {
 			break;
 		}
 		//エネミーの前の捜査COLLIDERを回転とPOS修正
-
+		
+		D3DXVECTOR3 pos_serch = enemy.pos;
+		pos_serch += enemy.speed*(SEARCH_AREA_X / 2);
+		SetPositionCollider3D(enemy.SearchColliderIdx, pos_serch);
 
 
 		//Enemyの前のCOLLIDERの中に、プレイヤとOBB判定　もし当たったら移動方向を変更
-		bool ans=CheckHitByIDOBB(g_Player->bodyColliderIdx, enemy.BodyColliderIdx);
+		bool ans=CheckHitByIDOBB(g_Player->bodyColliderIdx, enemy.SearchColliderIdx);
 		
 		if (ans)
 		{
 			D3DXVECTOR3 dir2 = g_Player->pos - enemy.pos;
-			switch (a)
+			switch (判断今回転の状況の変数)
 			{
 			case 0:
 				//このタイプの重力はgravity = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
@@ -884,10 +932,35 @@ void PhysicsUpdate(ENEMY & enemy) {
 		//新しい壁を当たり判定
 
 
+		// Push out wall
+		// 推出
+		D3DXVECTOR3 dirXZ = enemy.speed;
+		D3DXVECTOR3 hit, normal;
+		bool rayHit = false;
+		rayHit = RayHitEnemy(enemy.pos, &hit, &normal, dirXZ);
 
+		if (rayHit) 
+		{
+			D3DXVECTOR3 HITtoP = hit - enemy.pos;
+			float dis = fabsf(D3DXVec3Dot(&HITtoP, &normal));
+			for (int i = 0; i <= 100; i++) {
+				if (dis <= 50.0f) { // distance from wall : 100
+					float dir = D3DXVec3Dot(&enemy.speed, &normal);
+
+					if (dir > 0.0f) enemy.pos -= normal * 0.1f * i;
+					else enemy.pos += normal * 0.1f * i;
+					HITtoP = hit - enemy.pos;
+					dis = fabsf(D3DXVec3Dot(&HITtoP, &normal));
+				}
+				else {
+					break;
+				}
+			}
+			
+		}
 
 		//重生点を修正
-		/*
+		
 		D3DXMATRIX mtxWorld;
 		D3DXMATRIX mtxRot, mtxTranslate;
 		D3DXVECTOR3 NewPos;
@@ -896,13 +969,13 @@ void PhysicsUpdate(ENEMY & enemy) {
 		D3DXMatrixTranslation(&mtxTranslate, OldPos.x, OldPos.y, OldPos.z);
 		D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxTranslate);
 		// 回転を反映
-		D3DXMatrixRotationYawPitchRoll(&mtxRot, deltaRot.x, deltaRot.y, deltaRot.x);
+		D3DXMatrixRotationYawPitchRoll(&mtxRot, 世界回転の角度.x, 世界回転の角度.y, 世界回転の角度.x);
 		D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
 
 		D3DXVec3TransformCoord(&NewPos, &NewPos, &mtxWorld);
 		
 		enemy.Reborn_pos = NewPos;
-		*/
+		
 		
 
 

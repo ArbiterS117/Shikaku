@@ -43,7 +43,7 @@ enum enumCollider3DTag
 	collider3DTag_GroundArea_StoS,
 	collider3DTag_GroundArea_SnowWorld,
 	collider3DTag_EnemyChaseCheck,
-
+	collider3DTag_EnemySearchCheck,
 };
 //*****************************************************************************
 // 構造体定義
@@ -109,7 +109,7 @@ bool RayHitPlat(D3DXVECTOR3 pos, int TargetCID,D3DXVECTOR3 *HitPosition, D3DXVEC
 bool RayHitPlatWall(D3DXVECTOR3 pos, int TargetCID, D3DXVECTOR3 forwardXY, D3DXVECTOR3 *HitPosition, D3DXVECTOR3 *Normal);
 bool RayHitGround(D3DXVECTOR3 pos, D3DXVECTOR3 *HitPosition, D3DXVECTOR3 *Normal, int id);
 bool RayHitGroundWall(D3DXVECTOR3 pos, D3DXVECTOR3 forwardXY,D3DXVECTOR3 *HitPosition, D3DXVECTOR3 *Normal, int id);
-bool RayHitEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 * HitPosition, D3DXVECTOR3 * Normal, int id, D3DXVECTOR3  Rayway);
+bool RayHitEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 * HitPosition, D3DXVECTOR3 * Normal, D3DXVECTOR3  Rayway);
 // other
 COLLIDER3D *GetCollider(void);
 
